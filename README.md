@@ -1,7 +1,7 @@
 smisync
 =======
 
-Module Dolibarr de synchronisation des données SMI.
+Module Dolibarr de synchronisation des données vers SMI.
 
 Le but de ce module pour sa première version:
 - Synchroniser les tiers (client et/ou prospect) Dolibarr en les exportants dans les tables de SMI de manière automatique 
