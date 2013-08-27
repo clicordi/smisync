@@ -187,7 +187,7 @@ class modSmiSync extends DolibarrModules
                                     'titre'=>'Suivi d\'intervention',
                                     'mainmenu'=>'smisync',
 									'leftmenu'=>'smisync',
-									'url'=>'/smisync/skeleton_page.php',
+									'url'=>'/smisync/view/smiglance_page.php',
 									'langs'=>'mylangfile@smisync',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 									'position'=>100,
         							'enabled'=>'$conf->smisync->enabled',	// Define condition to show or hide menu entry. Use '$conf->smiglance->enabled' if entry must be visible if module is enabled.

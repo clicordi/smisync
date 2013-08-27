@@ -232,7 +232,7 @@ try {
                     if($err == 1)
                     {
                         $myquery = 'UPDATE smi_cli SET';
-                        foreach($cliSmi[$idSmi] as $key => $val)
+                        foreach($cliSmi[$idSmi] as $key => $val) 
                         {
                             $myquery .= ' '. $key .'=\''. $val .'\',';
                         }
@@ -297,7 +297,7 @@ catch (Exception $e)
 
 
 ?>
-<p>Je fais rien :D</p>
+<p>En construction ...</p>
 <a href="../admin/SmiSync_setuppage.php">Retour</a>
 
 
