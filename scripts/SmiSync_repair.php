@@ -1,6 +1,54 @@
 <?php
+/* <one line to give the program's name and a brief idea of what it does.>
+* Copyright (C) <year> <name of author>
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 
-// Faire plein de putins de commentaires !!!!!
+/**
+* \file admin/mymodule.php
+* \ingroup mymodule
+* \brief This file is an example module setup page
+* Put some comments here
+*/
+// Dolibarr environment
+$res = @include("../../main.inc.php"); // From htdocs directory
+if (! $res) {
+    $res = @include("../../../main.inc.php"); // From "custom" directory
+}
+
+
+// Libraries
+require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
+//require_once '../lib/mymodule.lib.php';
+//require_once "../class/myclass.class.php";
+// Translations
+$langs->load("smisync@smisync");
+
+// Access control
+if (! $user->admin) {
+    accessforbidden();
+}
+
+// Parameters
+$action = GETPOST('action', 'alpha');
+
+/*
+* Actions
+*/
+
+
 try {
     //identifiants pour la bdd de dolibarr
     $idDoli = array(
@@ -90,6 +138,7 @@ try {
     
     $cptModif = 0;
     $cptAjout = 0;
+    $cptCliOk = 0;
     // on boucle pour chaque clients
     while($userDoli = $usersDoli->fetch(PDO::FETCH_BOTH)) 
     {
@@ -102,11 +151,11 @@ try {
             if(isset($idcli[$userDoli['rowid']]) && isset($cliSmi[$idcli[$userDoli['rowid']]]))
             {
                 $idSmi = $idcli[$userDoli['rowid']];
-                echo 'present id correspondance';
+                //echo 'present id correspondance';
 
                 //on test les valeurs de notre client smi avec celles de doli
                 $err = 0;
-                echo 'ligne bdd smi';
+
                 if($cliSmi[$idSmi]['cli_cat'] != 'PAR')
                 {
                     $cliSmi[$idSmi]['cli_cat'] = 'PAR';
@@ -127,11 +176,6 @@ try {
                     $cliSmi[$idSmi]['cli_codemod'] = 'Administrateur';
                     $err = 1;
                 }
-                /*if($cliSmi[$idSmi]['cli_code'] != 'C12')
-                {
-                    $cliSmi[$idSmi]['cli_code'] = 'C12';
-                    $err = 1;
-                }*/
                 if($cliSmi[$idSmi]['cli_pass'] != '')
                 {
                     $cliSmi[$idSmi]['cli_pass'] = '';
@@ -142,7 +186,7 @@ try {
                     $cliSmi[$idSmi]['cli_type'] = '2';
                     $err = 1;
                 }
-            
+                // a refaire !!!!!!!!!!!!!!!!
                 if($userDoli['civilite'] == 'MME' && $cliSmi[$idSmi]['cli_civilite'] != 'MME')
                 {
                     echo 'civ0 '.$cliSmi[$idSmi]['cli_civilite'] .' / '.$userDoli['civilite'];
@@ -158,6 +202,14 @@ try {
                     $err = 1;
                     
                 }
+                else if($cliSmi[$idSmi]['cli_civilite'] == 'MME')
+                {
+
+                }
+                else if($cliSmi[$idSmi]['cli_civilite'] == 'MELLE')
+                {
+                    
+                }
                 else if($cliSmi[$idSmi]['cli_civilite'] != 'M.')
                 {
                     echo 'civ2 '.$cliSmi[$idSmi]['cli_civilite'] .' / '.$userDoli['civilite'];
@@ -168,7 +220,6 @@ try {
 
                 if($cliSmi[$idSmi]['cli_prenom'] != $userDoli['nom'])
                 {
-                    echo 'nom '.$cliSmi[$idSmi]['cli_prenom'] .' / '.$userDoli['nom'];
                     $cliSmi[$idSmi]['cli_prenom'] = $userDoli['nom'];
                     $err = 1;
                 }
@@ -234,31 +285,25 @@ try {
                     $myquery = 'UPDATE smi_cli SET';
                     foreach($cliSmi[$idSmi] as $key => $val) 
                     {
-                        $myquery .= ' '. $key .'=\''. $val .'\',';
+                        $myquery .= ' '. $key .'=\''. addslashes($val) .'\',';
                     }
                     $myquery = substr($myquery, 0, -1);
                     $myquery .= ' WHERE cli_id = '. $idSmi;
-                    //$myquery = "UPDATE smi_cli SET cli_cat='$cli_datemod', cli_civilite='$cli_civilite', cli_prenom='$cli_prenom', cli_adr1='$cli_adr1', cli_adr2='$cli_adr2', cli_dep='$cli_dep', cli_telf='$cli_telf', cli_fax='$cli_fax', cli_telp='$cli_telp', cli_email='$cli_email' WHERE cli_id = $cliSmiId";
-                    echo '<br>'.$myquery.'<br>';
+                    //echo '<br>'.$myquery.'<br>Client update';
+                    $bddSmi->query($myquery);
+                    $cptModif++;
                 }
                 else
                 {//pas d'erreur dans les données
-                    echo 'Client sans Probleme';
+                    //echo 'Client sans Probleme';
+                    $cptCliOk++;
                 }
 
-
-                /*{}
-                else
-                {
-                     echo 'pas ligne bdd smi';
-                     //Client dans la table des correspondance mais pas dans smi
-                     //donc faire un INSERT
-                }*/
             }
             else
             {
                 
-                echo 'client pas present dans smi';
+                //echo 'client pas present dans smi';
                 
                 $cli_cat = 'PAR'; // PAR pour 'particulier'
                 $cli_datecrea = date('Y-m-d'); // date du jour
@@ -305,17 +350,20 @@ try {
                 
                 // j'insert le client dolibarr dans la bdd de smi
                 $myquery = "INSERT INTO smi_cli (cli_cat, cli_datecrea, cli_codecrea, cli_datemod, cli_prop, cli_codemod, cli_code, cli_pass, cli_type, cli_ste, cli_rcs, cli_ape, cli_tvai, cli_civilite, cli_prenom, cli_nom, cli_adr1, cli_adr2, cli_dep, cli_ville, cli_codepays, cli_codeadev, cli_telf, cli_fax, cli_telp, cli_email, cli_mess, cli_notaa, cli_notat, cli_ccpta, cli_ccptasp, cli_cpta, cli_prev, cli_modfact) VALUES ('$cli_cat', '$cli_datecrea', '$cli_codecrea', '$cli_datemod', '$cli_prop', '$cli_codemod', '$cli_code', '$cli_pass', '$cli_type', '$cli_ste', '$cli_rcs', '$cli_ape', '$cli_tvai', '$cli_civilite', '$cli_prenom', '$cli_nom', '$cli_adr1', '$cli_adr2', '$cli_dep', '$cli_ville', '$cli_codepays', '$cli_codeadev', '$cli_telf', '$cli_fax', '$cli_telp', '$cli_email', '$cli_mess', '$cli_notaa', '$cli_notat', '$cli_ccpta', '$cli_ccptasp', '$cli_cpta', '$cli_prev', '$cli_modfact')";
-                echo '<br>'.$myquery.'<br>';
+                //echo '<br>'.$myquery.'<br>Client créé';
                 $bddSmi->query($myquery);
-                
+                $cptAjout++;
+
                 if(!isset($idcli[$userDoli['rowid']]))
                 {
-                    echo 'Id créé dans la table de correspondance<br>';
+                    //echo ' et Id créé dans la table de correspondance';
                     $lastSmiId1 = $bddSmi->query("SELECT LAST_INSERT_ID() FROM smi_cli");
                     $lastSmiId0 = $lastSmiId1->fetch(PDO::FETCH_BOTH);
                     $lastSmiId =  $lastSmiId0[0];
-                    
-                    $this->db->query("INSERT INTO llx_idcli (idcli_doli, idcli_smi) VALUES (".$userDoli['rowid'].", $lastSmiId)");
+                    //insert des id dans la table des correspondances
+                    $myquery = "INSERT INTO llx_idcli (idcli_doli, idcli_smi) VALUES (".$userDoli['rowid'].", $lastSmiId)";
+                    //echo '<br>'.$myquery.'<br>id cor créé';
+                    $bddDoli->query($myquery);
                 }
 
 
@@ -333,8 +381,26 @@ catch (Exception $e)
 }
 
 
+/*
+* View
+*/
+$page_name = "SmiSync_repair";
+llxHeader('', $langs->trans($page_name));
+
+// Subheader
+$linkback = '<a href="' . DOL_URL_ROOT . '/smisync/admin/SmiSync_setuppage.php">Retour à la page de configuration de SmiSync</a>';
+print_fiche_titre($langs->trans($page_name), $linkback);
+
+
+
 ?>
-<p>En construction ...</p>
-<a href="../admin/SmiSync_setuppage.php">Retour</a>
+<div class="titre">Problème des accents !</div>
+<div class="titre">Nombre de client(s) modifé(s) : <?php echo $cptModif; ?></div>
+<div class="titre">Nombre de client(s) ajouté(s) : <?php echo $cptAjout; ?></div>
+<div class="titre">Nombre de client(s) sans problème(s) : <?php echo $cptCliOk; ?></div>
 
+<?php
 
+llxFooter();
+
+$db->close();
