@@ -17,6 +17,6 @@ Version 0.2 (pas de date prévue, suivant déroulement des phases de test et cor
 Version 0.3 (idem, suivant 0.2)
 - simplifier la configuration du module côté Dolibarr.
 - Refonte de l'affichage des Interventions utilisateur (possibilité d'une deuxième vue: par Parc/machine)
-- 
+
 Cette liste, n'est pas figée, elle est ouverte à discussion sur le forum de SMI à l'adresse suivante:
 http://smitst.homelinux.com/phpBB3/viewtopic.php?f=8&t=602
