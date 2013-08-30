@@ -15,6 +15,7 @@ Version 0.2 (pas de date prévue, suivant déroulement des phases de test et cor
 - Ajout de la synchronisation des matériels/stocks
 
 Version 0.3 (idem, suivant 0.2)
+- optimisation du code, et des fonctionnalités suivant les retours.
 - simplifier la configuration du module côté Dolibarr.
 - Refonte de l'affichage des Interventions utilisateur (possibilité d'une deuxième vue: par Parc/machine)
 
