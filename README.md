@@ -4,7 +4,7 @@ smisync
 Module Dolibarr de synchronisation des données avec SMI.
 
 version 0.1 (alpha prévue courant septembre):
-- Synchroniser les tiers (client et/ou prospect) Dolibarr en les exportants dans les tables de SMI de manière automatique 
+- Synchroniser les tiers (client et/ou prospect) Dolibarr en les exportant dans les tables de SMI de manière automatique 
 (à chaque création/modification).
 - Script de vérification/compraison des données entre les deux bases, et réparation si nécessaire.
 - Afficher l'état pour un utilisateur, de ses propres interventions dans un nouvel onglet du menu top.
