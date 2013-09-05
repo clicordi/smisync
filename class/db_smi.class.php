@@ -6,7 +6,7 @@ class db_smi
     
     protected $url;
     protected $port;
-    protected $nom;
+    protected $name;
     protected $id;
     protected $pwd;
     
@@ -20,30 +20,47 @@ class db_smi
     //fonction de connection a la dbb smi
     function connect()
     {
-        $pdo_options[PDO::ATTR_ERRMODE] = PDO::ERRMODE_EXCEPTION;
-        // connexion a la bdd
-        $this->smi = new PDO('mysql:host='. $this->url .';dbname='. $this->nom.';port='. $this->port, $this->id, $this->mdp, $pdo_options); 
+        try {
+            $pdo_options[PDO::ATTR_ERRMODE] = PDO::ERRMODE_EXCEPTION;
+            // connexion a la bdd
+            $this->smi = new PDO('mysql:host='. $this->url .';dbname='. $this->name.';port='. $this->port, $this->id, $this->pwd, $pdo_options); 
+            
+        }
+        catch (Exception $e)
+        {
+            //throw new Exception($e->getMessage());
+            //die('Erreur : ' . $e->getMessage());
+        }
     }
 
     //fonction qui met a jour les variables de la classe
-    function setBd($newUrl, $newPort, $newNom, $newId, $newPwd)
+    function setVar($newUrl, $newPort, $newName, $newId, $newPwd)
     {
         $this->url = $newUrl;
         $this->port = $newPort;
-        $this->nom = $newNom;
+        $this->name = $newName;
         $this->id = $newId;
-        $this->mdp = $newPwd;
+        $this->pwd = $newPwd;
     }
     
     //fonction qui écris dans le fichier config les identifiants de la bdd smi
     function write()
     {
         // on ouvre le fichier
-        if(! $file = fopen('../smisync/admin/bddsmi.ini', 'r+'))
-            if(! $file = fopen('../../smisync/admin/bddsmi.ini', 'r+'))
-                if(! $file = fopen('../../smisync/admin/bddsmi.ini', 'r+'))
+        $file = fopen(DOL_DOCUMENT_ROOT.'/smisync/admin/bddsmi.ini', 'r+');
+        if($file == '')
+        {
+            $file = fopen('../../smisync/admin/bddsmi.ini', 'r+');
+            if($file == '')
+            {
+                $file = fopen('../../../smisync/admin/bddsmi.ini', 'r+');
+                if($file == '')
+                {
                     $file = fopen('../../../../smisync/admin/bddsmi.ini', 'r+');
-
+                }
+            }
+        }
+        //echo $file;
         // remet le curseur en debut de fichier
         fseek($file, 0);
         
@@ -52,7 +69,7 @@ class db_smi
         fputs($file, "\n");
         fputs($file, $this->port);
         fputs($file, "\n");
-        fputs($file, $this->nom);
+        fputs($file, $this->name);
         fputs($file, "\n");
         fputs($file, $this->id);
         fputs($file, "\n");
@@ -66,10 +83,20 @@ class db_smi
     function read()
     {
         // on ouvre le fichier
-        //if(! $file = fopen('../smisync/admin/bddsmi.ini', 'r'))
-            if(! $file = fopen('../../smisync/admin/bddsmi.ini', 'r'))
-                if(! $file = fopen('../../smisync/admin/bddsmi.ini', 'r'))
+        $file = fopen(DOL_DOCUMENT_ROOT.'/smisync/admin/bddsmi.ini', 'r');
+        if($file == '')
+        {
+            $file = fopen('../../smisync/admin/bddsmi.ini', 'r');
+            if($file == '')
+            {
+                $file = fopen('../../../smisync/admin/bddsmi.ini', 'r');
+                if($file == '')
+                {
                     $file = fopen('../../../../smisync/admin/bddsmi.ini', 'r');
+                }
+            }
+        }
+        //echo $file;
 
         // remet le curseur en debut de fichier
         fseek($file, 0);
@@ -77,11 +104,41 @@ class db_smi
         // lecture des variables et retire le retour a la ligne a la fin
         $this->url = substr(fgets($file), 0, -1);
         $this->port = substr(fgets($file), 0, -1);
-        $this->nom = substr(fgets($file), 0, -1);
+        $this->name = substr(fgets($file), 0, -1);
         $this->id = substr(fgets($file), 0, -1);
-        $this->mdp = substr(fgets($file), 0, -1);
+        $this->pwd = substr(fgets($file), 0, -1);
         
         fclose($file);
+    }
+    
+    
+    function getUrl()
+    {
+        return $this->url;
+    }
+    
+
+    function getPort()
+    {
+        return $this->port;
+    }
+    
+
+    function getName()
+    {
+        return $this->name;
+    }
+    
+
+    function getId()
+    {
+        return $this->id;
+    }
+    
+
+    function getPwd()
+    {
+        return $this->pwd;
     }
     
 

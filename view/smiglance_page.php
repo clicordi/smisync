@@ -46,6 +46,7 @@ if (! $res && file_exists("../../../main.inc.php")) $res=@include '../../../main
 if (! $res) die("Include of main fails");
 // Change this following line to use the correct relative path from htdocs
 //dol_include_once('/smisync/class/skeleton_class.class.php');
+require_once "../class/db_smi.class.php";
 
 // Load traductions files requiredby by page
 $langs->load("companies");
@@ -100,63 +101,17 @@ $page_name = 'Suivi d\'intervention';
 llxHeader('', $page_name, '');
 
 
-
-
-
 // Put here content of your page
 
 
 try {
-    
-    //identifiants bdd dolibarr
-    $idDoli = array(
-    "URL"			    => "localhost", 
-    "port"			    => "8888", 
-    "nomBDD"		=> "dolibarr", 
-    "identifiant"	=> "root", 
-    "mdp"			    => "root" 
-    );
-    
-    // on ouvre le fichier
-    $file = fopen('/var/www/doli/htdocs/smisync/admin/bddsmi.ini', 'r+');
+    //connection bdd smi
+    $bdd = new db_smi();
 
-    // remet le curseur en debut de fichier
-    fseek($file, 0);
-
-    // lecture des variables
-    $url = fgets($file);
-    $port = fgets($file);
-    $nom = fgets($file);
-    $id = fgets($file);
-    $mdp = fgets($file);
-    
-    //retire le retour a la ligne a la fin
-    $url = substr($url, 0, -1);
-    $port = substr($port, 0, -1);
-    $nom = substr($nom, 0, -1);
-    $id = substr($id, 0, -1);
-    $mdp =substr($mdp, 0, -1);
-
-    fclose($file);
-    
-    //identifiants pour la bdd de smi
-    $idSmi = array(
-        "URL"               => $url, 
-        "port"              => $port, 
-        "nomBDD"      => $nom, 
-        "identifiant"   => $id, 
-        "mdp"             => $mdp 
-    ); 
-            
-
-    $pdo_options[PDO::ATTR_ERRMODE] = PDO::ERRMODE_EXCEPTION;
-    // connections aux bdd
-    $bddSmi = new PDO('mysql:host='. $idSmi['URL'] .';dbname='. $idSmi['nomBDD'].';port='. $idSmi['port'], $idSmi['identifiant'], $idSmi['mdp'], $pdo_options); 
-    $bddDoli = new PDO('mysql:host='. $idDoli['URL'] .';dbname='. $idDoli['nomBDD'].';port='. $idDoli['port'], $idDoli['identifiant'], $idDoli['mdp'], $pdo_options); 
 
     //on charge les statuts
     // recupere toute les infos des statuts
-    $infosStatutsbdd = $bddSmi->query("SELECT statut_code, statut_desc, statut_img FROM smi_statut");
+    $infosStatutsbdd = $bdd->smi->query("SELECT statut_code, statut_desc, statut_img FROM smi_statut");
     // on met ca dans un tableau
     $infosStatuts = array();
     while($infosStatutbdd = $infosStatutsbdd->fetch(PDO::FETCH_BOTH))
@@ -168,18 +123,18 @@ try {
     if($user->admin)
     {
         //on recupere les infos des interventions
-        $userInfos = $bddSmi->query("SELECT int_code, int_codecli, int_codestatut, int_datefinp, int_mat, int_pbm, cli_prenom, cli_nom FROM smi_int INNER JOIN smi_cli WHERE int_codecli = cli_code ORDER BY int_datedde");
+        $userInfos = $bdd->smi->query("SELECT int_code, int_codecli, int_codestatut, int_datefinp, int_mat, int_pbm, cli_prenom, cli_nom FROM smi_int INNER JOIN smi_cli WHERE int_codecli = cli_code ORDER BY int_datedde");
     }
     else
     {
         // probleme d'accents.............. T.T ........
         // recupere l'idsmi qui correspond au user (dans dolibarr)
-        $cliId = $bddDoli->query("SELECT idcli_smi FROM llx_idcli WHERE idcli_doli = (SELECT fk_societe FROM llx_user WHERE rowid = ".$user->id.")");
+        $cliId = $db->query("SELECT idcli_smi FROM llx_idcli WHERE idcli_doli = (SELECT fk_societe FROM llx_user WHERE rowid = ".$user->id.")");
         $cliSmi = $cliId->fetch(PDO::FETCH_BOTH);
-        $cliSmiId =  $cliSmi['idcli_smi'];
+        $cliSmiId =  $cliSmi->idcli_smi;
 
         //on recupere les infos grace a cet idsmi (dans smi)
-        $userInfos = $bddSmi->query("SELECT int_code, int_codestatut, int_datefinp, int_mat, int_pbm FROM smi_int WHERE int_codecli = (SELECT cli_code FROM smi_cli WHERE cli_id = $cliSmiId) ORDER BY int_datedde");
+        $userInfos = $bdd->smi->query("SELECT int_code, int_codestatut, int_datefinp, int_mat, int_pbm FROM smi_int WHERE int_codecli = (SELECT cli_code FROM smi_cli WHERE cli_id = $cliSmiId) ORDER BY int_datedde");
     }
 
     // variables a remplir pour l'affichage plus bas

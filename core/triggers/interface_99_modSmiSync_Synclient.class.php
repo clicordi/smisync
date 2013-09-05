@@ -17,20 +17,16 @@
  */
 
 /**
- *  \file       htdocs/core/triggers/interface_90_all_Demo.class.php
+ *  \file       htdocs/core/triggers/interface_99_modSmiSync_Synclient.class.php
  *  \ingroup    core
  *  \brief      Fichier de demo de personalisation des actions du workflow
- *  \remarks    Son propre fichier d'actions peut etre cree par recopie de celui-ci:
- *              - Le nom du fichier doit etre: interface_99_modMymodule_Mytrigger.class.php
- *				                           ou: interface_99_all_Mytrigger.class.php
- *              - Le fichier doit rester stocke dans core/triggers
- *              - Le nom de la classe doit etre InterfaceMytrigger
- *              - Le nom de la propriete name doit etre Mytrigger
+ *  \remarks
+ *              
  */
-
+require_once DOL_DOCUMENT_ROOT."/smisync/class/db_smi.class.php";
 
 /**
- *  Class of triggers for demo module
+ *  Class of triggers for smisync module
  */
 class InterfaceSynclient
 {
@@ -173,54 +169,10 @@ class InterfaceSynclient
         {
 
             try {
-                //identifiants pour la bdd de dolibarr
-                /*$idDoli = array(
-                    "URL"			=> "localhost", 
-                    "port"			=> "8888", 
-                    "nomBDD"		=> "dolibarr", 
-                    "identifiant"	=> "root", 
-                    "mdp"			=> "root" 
-                ); */
-                
-                // on ouvre le fichier
-                $file = fopen('/var/www/doli/htdocs/smisync/admin/bddsmi.ini', 'r+');
-
-                // remet le curseur en debut de fichier
-                fseek($file, 0);
-
-                // lecture des variables
-                $url = fgets($file);
-                $port = fgets($file);
-                $nom = fgets($file);
-                $id = fgets($file);
-                $mdp = fgets($file);
-                
-                //retire le retour a la ligne a la fin
-                $url = substr($url, 0, -1);
-                $port = substr($port, 0, -1);
-                $nom = substr($nom, 0, -1);
-                $id = substr($id, 0, -1);
-                $mdp =substr($mdp, 0, -1);
-
-                fclose($file);
-                
-                //identifiants pour la bdd de smi
-                $idSmi = array(
-                    "URL"			=> $url, 
-                    "port"			=> $port, 
-                    "nomBDD"		=> $nom, 
-                    "identifiant"	=> $id, 
-                    "mdp"			=> $mdp 
-                ); 
-            
-                $pdo_options[PDO::ATTR_ERRMODE] = PDO::ERRMODE_EXCEPTION;
-                // connections aux bdd
-                $bddSmi = new PDO('mysql:host='. $idSmi['URL'] .';dbname='. $idSmi['nomBDD'].';port='. $idSmi['port'], $idSmi['identifiant'], $idSmi['mdp'], $pdo_options); 
-                //$bddDoli = new PDO('mysql:host='. $idDoli['URL'] .';dbname='. $idDoli['nomBDD'].';port='. $idDoli['port'], $idDoli['identifiant'], $idDoli['mdp'], $pdo_options); 
-                
-            
+                //connection bdd smi
+                $bdd = new db_smi();
                 // recherche du code client le plus grand
-                $clicode = $bddSmi->query('SELECT cli_code FROM smi_cli ORDER BY cli_code DESC LIMIT 0, 1');
+                $clicode = $bdd->smi->query('SELECT cli_code FROM smi_cli ORDER BY cli_code DESC LIMIT 0, 1');
                 $clicod = $clicode->fetch(PDO::FETCH_BOTH);
                 $cli_code =  $clicod['cli_code'];
                     
@@ -275,11 +227,12 @@ class InterfaceSynclient
                     // j'insert le client dolibarr dans la bdd de smi
                     $myquery = "INSERT INTO smi_cli (cli_cat, cli_datecrea, cli_codecrea, cli_datemod, cli_prop, cli_codemod, cli_code, cli_pass, cli_type, cli_ste, cli_rcs, cli_ape, cli_tvai, cli_civilite, cli_prenom, cli_nom, cli_adr1, cli_adr2, cli_dep, cli_ville, cli_codepays, cli_codeadev, cli_telf, cli_fax, cli_telp, cli_email, cli_mess, cli_notaa, cli_notat, cli_ccpta, cli_ccptasp, cli_cpta, cli_prev, cli_modfact) VALUES ('$cli_cat', '$cli_datecrea', '$cli_codecrea', '$cli_datemod', '$cli_prop', '$cli_codemod', '$cli_code', '$cli_pass', '$cli_type', '$cli_ste', '$cli_rcs', '$cli_ape', '$cli_tvai', '$cli_civilite', '$cli_prenom', '$cli_nom', '$cli_adr1', '$cli_adr2', '$cli_dep', '$cli_ville', '$cli_codepays', '$cli_codeadev', '$cli_telf', '$cli_fax', '$cli_telp', '$cli_email', '$cli_mess', '$cli_notaa', '$cli_notat', '$cli_ccpta', '$cli_ccptasp', '$cli_cpta', '$cli_prev', '$cli_modfact')";
                     // echo $myquery.'<br>';
-                    $bddSmi->query($myquery);
+                    $bdd->smi->query($myquery);
                     
-                    $lastSmiId1 = $bddSmi->query("SELECT LAST_INSERT_ID() FROM smi_cli");
-                    echo $lastSmiId0 = $lastSmiId1->fetch(PDO::FETCH_BOTH);
-                    echo $lastSmiId =  $lastSmiId0[0];
+                    //j'insert les id doli et smi dans la table des correspondances
+                    $lastSmiId1 = $bdd->smi->query("SELECT LAST_INSERT_ID() FROM smi_cli");
+                    $lastSmiId0 = $lastSmiId1->fetch(PDO::FETCH_BOTH);
+                    $lastSmiId =  $lastSmiId0[0];
                     
                     $this->db->query("INSERT INTO llx_idcli (idcli_doli, idcli_smi) VALUES (".$object->id.", $lastSmiId)");
                     
@@ -290,7 +243,6 @@ class InterfaceSynclient
             }
             catch (Exception $e)
             {
-                echo $e->getMessage();
                 die('Erreur : ' . $e->getMessage());
             }
 
@@ -298,60 +250,18 @@ class InterfaceSynclient
         }
         elseif ($action == 'COMPANY_MODIFY')
         {
-            try {
-                //identifiants pour la bdd de dolibarr
-                $idDoli = array(
-                    "URL"			=> "localhost", 
-                    "port"			=> "8888", 
-                    "nomBDD"		=> "dolibarr", 
-                    "identifiant"	=> "root", 
-                    "mdp"			=> "root" 
-                );
+            try {                
+                //connection bdd smi
+                $bdd = new db_smi();
                 
-                // on ouvre le fichier
-                $file = fopen('/var/www/doli/htdocs/smisync/admin/bddsmi.ini', 'r+');
-
-                // remet le curseur en debut de fichier
-                fseek($file, 0);
-
-                // lecture des variables
-                $url = fgets($file);
-                $port = fgets($file);
-                $nom = fgets($file);
-                $id = fgets($file);
-                $mdp = fgets($file);
-                
-                //retire le retour a la ligne a la fin
-                $url = substr($url, 0, -1);
-                $port = substr($port, 0, -1);
-                $nom = substr($nom, 0, -1);
-                $id = substr($id, 0, -1);
-                $mdp =substr($mdp, 0, -1);
-
-                fclose($file);
-                
-                //identifiants pour la bdd de smi
-                $idSmi = array(
-                    "URL"			=> $url, 
-                    "port"			=> $port, 
-                    "nomBDD"		=> $nom, 
-                    "identifiant"	=> $id, 
-                    "mdp"			=> $mdp 
-                );
-                
-                $pdo_options[PDO::ATTR_ERRMODE] = PDO::ERRMODE_EXCEPTION;
-                // connections aux bdd
-                $bddSmi = new PDO('mysql:host='. $idSmi['URL'] .';dbname='. $idSmi['nomBDD'].';port='. $idSmi['port'], $idSmi['identifiant'], $idSmi['mdp'], $pdo_options); 
-                $bddDoli = new PDO('mysql:host='. $idDoli['URL'] .';dbname='. $idDoli['nomBDD'].';port='. $idDoli['port'], $idDoli['identifiant'], $idDoli['mdp'], $pdo_options); 
-                
+                                
                 // on tri les clients dans les tiers
                 if($object->client != 0)
                 {
                     // recherche de l'id du client smi correspondant
-                    //$cliId = $this->db->query('SELECT idcli_smi FROM llx_idcli WHERE idcli_doli = '.$object->id);
-                    $cliId = $bddDoli->query('SELECT idcli_smi FROM llx_idcli WHERE idcli_doli = '.$object->id);
-                    $cliSmi = $cliId->fetch(PDO::FETCH_BOTH);
-                    $cliSmiId =  $cliSmi['idcli_smi'];
+                    $cliId = $this->db->query('SELECT idcli_smi FROM llx_idcli WHERE idcli_doli = '.$object->id);
+                    $cliSmi = $this->db->fetch_object($cliId);
+                    $cliSmiId =  $cliSmi->idcli_smi;
                     
                     
                     // INFOS CLIENTS
@@ -378,7 +288,7 @@ class InterfaceSynclient
                     if(!is_numeric($cliSmiId))
                     {
                         // recherche du code client le plus grand
-                        $clicode = $bddSmi->query('SELECT cli_code FROM smi_cli ORDER BY cli_code DESC LIMIT 0, 1');
+                        $clicode = $bdd->smi->query('SELECT cli_code FROM smi_cli ORDER BY cli_code DESC LIMIT 0, 1');
                         $clicod = $clicode->fetch(PDO::FETCH_BOTH);
                         $cli_code =  $clicod['cli_code'];
 
@@ -415,9 +325,9 @@ class InterfaceSynclient
                         
                         // j'insert le client dolibarr dans la bdd de smi
                         $myquery = "INSERT INTO smi_cli (cli_cat, cli_datecrea, cli_codecrea, cli_datemod, cli_prop, cli_codemod, cli_code, cli_pass, cli_type, cli_ste, cli_rcs, cli_ape, cli_tvai, cli_civilite, cli_prenom, cli_nom, cli_adr1, cli_adr2, cli_dep, cli_ville, cli_codepays, cli_codeadev, cli_telf, cli_fax, cli_telp, cli_email, cli_mess, cli_notaa, cli_notat, cli_ccpta, cli_ccptasp, cli_cpta, cli_prev, cli_modfact) VALUES ('$cli_cat', '$cli_datecrea', '$cli_codecrea', '$cli_datemod', '$cli_prop', '$cli_codemod', '$cli_code', '$cli_pass', '$cli_type', '$cli_ste', '$cli_rcs', '$cli_ape', '$cli_tvai', '$cli_civilite', '$cli_prenom', '$cli_nom', '$cli_adr1', '$cli_adr2', '$cli_dep', '$cli_ville', '$cli_codepays', '$cli_codeadev', '$cli_telf', '$cli_fax', '$cli_telp', '$cli_email', '$cli_mess', '$cli_notaa', '$cli_notat', '$cli_ccpta', '$cli_ccptasp', '$cli_cpta', '$cli_prev', '$cli_modfact')";
-                        $bddSmi->query($myquery);
+                        $bdd->smi->query($myquery);
                         
-                        $lastSmiId1 = $bddSmi->query("SELECT LAST_INSERT_ID() FROM smi_cli");
+                        $lastSmiId1 = $bdd->smi->query("SELECT LAST_INSERT_ID() FROM smi_cli");
                         $lastSmiId0 = $lastSmiId1->fetch(PDO::FETCH_BOTH);
                         $lastSmiId =  $lastSmiId0[0];
                         
@@ -427,7 +337,7 @@ class InterfaceSynclient
                     {
                         // je met a jour le client dolibarr dans la bdd de smi
                         $myquery = "UPDATE smi_cli SET cli_datemod='$cli_datemod', cli_civilite='$cli_civilite', cli_prenom='$cli_prenom', cli_adr1='$cli_adr1', cli_adr2='$cli_adr2', cli_dep='$cli_dep', cli_telf='$cli_telf', cli_fax='$cli_fax', cli_telp='$cli_telp', cli_email='$cli_email' WHERE cli_id = $cliSmiId";
-                        $bddSmi->query($myquery);
+                        $bdd->smi->query($myquery);
                     }
                 }
                 
