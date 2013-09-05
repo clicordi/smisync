@@ -106,12 +106,12 @@ llxHeader('', $page_name, '');
 
 try {
     //connection bdd smi
-    $bdd = new db_smi();
+    $dbSmi = db_smi::getInstance()->getSmi();
 
 
     //on charge les statuts
     // recupere toute les infos des statuts
-    $infosStatutsbdd = $bdd->smi->query("SELECT statut_code, statut_desc, statut_img FROM smi_statut");
+    $infosStatutsbdd = $dbSmi->query("SELECT statut_code, statut_desc, statut_img FROM smi_statut");
     // on met ca dans un tableau
     $infosStatuts = array();
     while($infosStatutbdd = $infosStatutsbdd->fetch(PDO::FETCH_BOTH))
@@ -123,7 +123,7 @@ try {
     if($user->admin)
     {
         //on recupere les infos des interventions
-        $userInfos = $bdd->smi->query("SELECT int_code, int_codecli, int_codestatut, int_datefinp, int_mat, int_pbm, cli_prenom, cli_nom FROM smi_int INNER JOIN smi_cli WHERE int_codecli = cli_code ORDER BY int_datedde");
+        $userInfos = $dbSmi->query("SELECT int_code, int_codecli, int_codestatut, int_datefinp, int_mat, int_pbm, cli_prenom, cli_nom FROM smi_int INNER JOIN smi_cli WHERE int_codecli = cli_code ORDER BY int_datedde");
     }
     else
     {
@@ -134,7 +134,7 @@ try {
         $cliSmiId =  $cliSmi->idcli_smi;
 
         //on recupere les infos grace a cet idsmi (dans smi)
-        $userInfos = $bdd->smi->query("SELECT int_code, int_codestatut, int_datefinp, int_mat, int_pbm FROM smi_int WHERE int_codecli = (SELECT cli_code FROM smi_cli WHERE cli_id = $cliSmiId) ORDER BY int_datedde");
+        $userInfos = $dbSmi->query("SELECT int_code, int_codestatut, int_datefinp, int_mat, int_pbm FROM smi_int WHERE int_codecli = (SELECT cli_code FROM smi_cli WHERE cli_id = $cliSmiId) ORDER BY int_datedde");
     }
 
     // variables a remplir pour l'affichage plus bas

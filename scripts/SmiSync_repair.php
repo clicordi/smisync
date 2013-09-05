@@ -52,7 +52,8 @@ $action = GETPOST('action', 'alpha');
 
 try {
     //connection bdd smi
-    $bdd = new db_smi();
+    $dbSmi = db_smi::getInstance()->getSmi();
+    $dbSmi2 = db_smi::getInstance()->getSmi();
 
 
     //recupere tout les id dans la table des correspondances des id smi/doli
@@ -70,7 +71,7 @@ try {
     
     
     // recherche du code client le plus grand
-    $clicodelast = $bdd->smi->query('SELECT cli_code FROM smi_cli ORDER BY cli_code DESC LIMIT 0, 1');
+    $clicodelast = $dbSmi->query('SELECT cli_code FROM smi_cli ORDER BY cli_code DESC LIMIT 0, 1');
     $clicodlast = $clicodelast->fetch(PDO::FETCH_BOTH);
     $cli_code =  $clicodlast['cli_code'];
     //si pas de code clients presents
@@ -78,7 +79,7 @@ try {
         $cli_code = 'C120000000';
     
     //je recupere les infos des client de smi
-    $usersSmi = $bdd->smi->query('SELECT cli_id, cli_cat, cli_datecrea, cli_codecrea, cli_datemod, cli_prop, cli_codedo, cli_codemod, cli_code, cli_pass, cli_type, cli_ste, cli_rcs, cli_ape, cli_tvai, cli_civilite, cli_prenom, cli_nom, cli_adr1, cli_adr2, cli_dep, cli_ville, cli_codepays, cli_codeadev, cli_telf, cli_fax, cli_telp, cli_email, cli_mess, cli_notaa, cli_notat, cli_ccpta, cli_ccptasp, cli_cpta, cli_prev, cli_modfact FROM smi_cli');
+    $usersSmi = $dbSmi->query('SELECT cli_id, cli_cat, cli_datecrea, cli_codecrea, cli_datemod, cli_prop, cli_codedo, cli_codemod, cli_code, cli_pass, cli_type, cli_ste, cli_rcs, cli_ape, cli_tvai, cli_civilite, cli_prenom, cli_nom, cli_adr1, cli_adr2, cli_dep, cli_ville, cli_codepays, cli_codeadev, cli_telf, cli_fax, cli_telp, cli_email, cli_mess, cli_notaa, cli_notat, cli_ccpta, cli_ccptasp, cli_cpta, cli_prev, cli_modfact FROM smi_cli');
     $cliSmi = array();
     $i = 0;
     while($userSmi = $usersSmi->fetch(PDO::FETCH_ASSOC))
@@ -256,7 +257,7 @@ try {
                     $myquery = substr($myquery, 0, -1);
                     $myquery .= ' WHERE cli_id = '. $idSmi;
                     //echo '<br>'.$myquery.'<br>Client update';
-                    $bdd->smi->query($myquery);
+                    $dbSmi->query($myquery);
                     $cptModif++;
                 }
                 else
@@ -317,13 +318,13 @@ try {
                 // j'insert le client dolibarr dans la bdd de smi
                 $myquery = "INSERT INTO smi_cli (cli_cat, cli_datecrea, cli_codecrea, cli_datemod, cli_prop, cli_codemod, cli_code, cli_pass, cli_type, cli_ste, cli_rcs, cli_ape, cli_tvai, cli_civilite, cli_prenom, cli_nom, cli_adr1, cli_adr2, cli_dep, cli_ville, cli_codepays, cli_codeadev, cli_telf, cli_fax, cli_telp, cli_email, cli_mess, cli_notaa, cli_notat, cli_ccpta, cli_ccptasp, cli_cpta, cli_prev, cli_modfact) VALUES ('$cli_cat', '$cli_datecrea', '$cli_codecrea', '$cli_datemod', '$cli_prop', '$cli_codemod', '$cli_code', '$cli_pass', '$cli_type', '$cli_ste', '$cli_rcs', '$cli_ape', '$cli_tvai', '$cli_civilite', '$cli_prenom', '$cli_nom', '$cli_adr1', '$cli_adr2', '$cli_dep', '$cli_ville', '$cli_codepays', '$cli_codeadev', '$cli_telf', '$cli_fax', '$cli_telp', '$cli_email', '$cli_mess', '$cli_notaa', '$cli_notat', '$cli_ccpta', '$cli_ccptasp', '$cli_cpta', '$cli_prev', '$cli_modfact')";
                 //echo '<br>'.$myquery.'<br>Client créé';
-                $bdd->smi->query($myquery);
+                $dbSmi->query($myquery);
                 $cptAjout++;
 
                 if(!isset($idcli[$userDoli->rowid]))
                 {
                     //echo ' et Id créé dans la table de correspondance';
-                    $lastSmiId1 = $bdd->smi->query("SELECT LAST_INSERT_ID() FROM smi_cli");
+                    $lastSmiId1 = $dbSmi->query("SELECT LAST_INSERT_ID() FROM smi_cli");
                     $lastSmiId0 = $lastSmiId1->fetch(PDO::FETCH_BOTH);
                     $lastSmiId =  $lastSmiId0[0];
                     //insert des id dans la table des correspondances

@@ -117,12 +117,12 @@ if(isset($_REQUEST['int_code']) && !empty($_REQUEST['int_code']))
     
     try {        
         //connection bdd smi
-        $bdd = new db_smi();
+        $dbSmi = db_smi::getInstance()->getSmi();
         
         
         //on charge les statuts
         // recupere toute les infos des statuts
-        $infosStatutsbdd = $bdd->smi->query("SELECT statut_code, statut_desc, statut_img FROM smi_statut");
+        $infosStatutsbdd = $dbSmi->query("SELECT statut_code, statut_desc, statut_img FROM smi_statut");
         // on met ca dans un tableau
         $infosStatuts = array();
         while($infosStatutbdd = $infosStatutsbdd->fetch(PDO::FETCH_BOTH))
@@ -190,7 +190,7 @@ if(isset($_REQUEST['int_code']) && !empty($_REQUEST['int_code']))
         // on parcour les requetes
         foreach($querys as $query)
         {
-            $infos = $bdd->smi->query($query);
+            $infos = $dbSmi->query($query);
             //On parcour les resultats description requetes
             while($info = $infos->fetch(PDO::FETCH_BOTH))
             {

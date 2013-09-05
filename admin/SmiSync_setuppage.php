@@ -58,19 +58,19 @@ $action = GETPOST('action', 'alpha');
   try {
     
     //connection bdd smi
-    $bdd = new db_smi();
+    $dbSmi = db_smi::getInstance();
 
     if(isset($_REQUEST['urlbdd']) && isset($_REQUEST['portbdd']) && isset($_REQUEST['nombdd']) && isset($_REQUEST['idbdd']) && isset($_REQUEST['mdpbdd'])
      && !empty($_REQUEST['urlbdd']) && !empty($_REQUEST['portbdd']) && !empty($_REQUEST['nombdd']) && !empty($_REQUEST['idbdd']) && !empty($_REQUEST['mdpbdd']))
     {
         //met a jour les variables    
-        $bdd->setVar($_REQUEST['urlbdd'], $_REQUEST['portbdd'], $_REQUEST['nombdd'], $_REQUEST['idbdd'], $_REQUEST['mdpbdd']);
+        $dbSmi->setVar($_REQUEST['urlbdd'], $_REQUEST['portbdd'], $_REQUEST['nombdd'], $_REQUEST['idbdd'], $_REQUEST['mdpbdd']);
 
-        $bdd->write();
+        $dbSmi->write();
     }
 
-    $bdd->read();
-    $bdd->connect();
+    $dbSmi->read();
+    $dbSmi->connect();
 
     /*
      * Champ a afficher dans le suivi d'intervention
@@ -167,23 +167,23 @@ print_fiche_titre($langs->trans($page_name), $linkback);
         </tr>
         <tr class="impair">
             <td><label for="urlbdd">URL</label></td>
-            <td><input id="urlbdd" name="urlbdd" type="text" value="<?php print $bdd->getUrl(); ?>" /></td>
+            <td><input id="urlbdd" name="urlbdd" type="text" value="<?php print $dbSmi->getUrl(); ?>" /></td>
         </tr>
         <tr class="pair">
             <td><label for="portbdd">port</label></td>
-            <td><input id="portbdd" name="portbdd" type="text" value="<?php print $bdd->getPort(); ?>" /></td>
+            <td><input id="portbdd" name="portbdd" type="text" value="<?php print $dbSmi->getPort(); ?>" /></td>
         </tr>
         <tr class="impair">
             <td><label for="nombdd">nomBDD</label></td>
-            <td><input id="nombdd" name="nombdd" type="text" value="<?php print $bdd->getName(); ?>" /></td>
+            <td><input id="nombdd" name="nombdd" type="text" value="<?php print $dbSmi->getName(); ?>" /></td>
         </tr>
         <tr class="pair">
             <td><label for="idbdd">identifiant</label></td>
-            <td><input id="idbdd" name="idbdd" type="text" value="<?php print $bdd->getId(); ?>" /></td>
+            <td><input id="idbdd" name="idbdd" type="text" value="<?php print $dbSmi->getId(); ?>" /></td>
         </tr>
         <tr class="impair">
             <td><label for="mdpbdd">mot de passe</label></td>
-            <td><input id="mdpbdd" name="mdpbdd" type="text" value="<?php print $bdd->getPwd(); ?>" /></td>
+            <td><input id="mdpbdd" name="mdpbdd" type="text" value="<?php print $dbSmi->getPwd(); ?>" /></td>
         </tr>
         <tr class="pair">
             <td colspan="2" align="center"><input class="button" type="submit" value="Modifier" /></td>

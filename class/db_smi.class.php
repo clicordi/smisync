@@ -2,13 +2,15 @@
 
 class db_smi
 {
-    public $smi;
+    private static $_instance = null;
     
-    protected $url;
-    protected $port;
-    protected $name;
-    protected $id;
-    protected $pwd;
+    private $smi;
+
+    private $url;
+    private $port;
+    private $name;
+    private $id;
+    private $pwd;
     
     //constructeur lis et ce connecte a la bdd
     function __construct()
@@ -111,39 +113,45 @@ class db_smi
         fclose($file);
     }
     
+    // renvoie l'instance en cours ou la crée
+    public static function getInstance()
+    {
+        if (is_null(self::$_instance))
+        {
+            self::$_instance = new self();
+        }
+        return self::$_instance;
+    }
     
+    function getSmi()
+    {
+        return $this->smi;
+    }
+
     function getUrl()
     {
         return $this->url;
     }
-    
 
     function getPort()
     {
         return $this->port;
     }
-    
 
     function getName()
     {
         return $this->name;
     }
-    
 
     function getId()
     {
         return $this->id;
     }
-    
 
     function getPwd()
     {
         return $this->pwd;
     }
-    
 
-    
-    
-    
 }
 ?>
