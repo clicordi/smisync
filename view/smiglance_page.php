@@ -130,7 +130,7 @@ try {
         // probleme d'accents.............. T.T ........
         // recupere l'idsmi qui correspond au user (dans dolibarr)
         $cliId = $db->query("SELECT idcli_smi FROM llx_idcli WHERE idcli_doli = (SELECT fk_societe FROM llx_user WHERE rowid = ".$user->id.")");
-        $cliSmi = $cliId->fetch(PDO::FETCH_BOTH);
+        $cliSmi = $db->fetch_object($cliId);
         $cliSmiId =  $cliSmi->idcli_smi;
 
         //on recupere les infos grace a cet idsmi (dans smi)
