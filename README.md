@@ -13,6 +13,7 @@ Version 0.2 (pas de date prévue, suivant déroulement des phases de test et cor
 
 - Optimisation du code, et des fonctionnalités suivant les retours*.
 - Ajout de la synchronisation des matériels/stocks/services/main d'oeuvre.
+- ajouter une box 'Suivi d'intervention' dans l'accueil Dolibarr
 
 Version 0.3 (idem, suivant 0.2)
 - Optimisation du code, et des fonctionnalités suivant les retours*.
