@@ -245,7 +245,7 @@ print_fiche_titre($langs->trans($page_name), '');
 <table class="noborder">
     <tr class="liste_titre">
         <th colspan="2">Statut</th>
-        <th>Code d''intervention</th>
+        <th>Code d'intervention</th>
         <th>Date de fin</th>
         <th>Materiel</th>
         <th>Probleme</th>
@@ -278,7 +278,7 @@ print_fiche_titre($langs->trans($page_name), '');
 <table class="noborder">
     <tr class="liste_titre">
         <th width="22px"></th>
-        <th>Code d''intervention</th>
+        <th>Code d'intervention</th>
         <th>Date de fin</th>
         <th>Materiel</th>
         <th>Probleme</th>

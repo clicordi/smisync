@@ -149,7 +149,7 @@ print_fiche_titre($langs->trans($page_name), $linkback);
 
 <br />
 <div class="titre">
-    Lancer le Script pour réparer les deux bases de données
+    Lancer le script de comparaison des bases de données et met à jour les clients de SMI si une différence est trouvée.
     <a class="button" href="<?php print DOL_URL_ROOT; ?>/smisync/scripts/SmiSync_repair.php" style="text-decoration: none;">Lancer</a>
 </div>
 
@@ -195,14 +195,14 @@ print_fiche_titre($langs->trans($page_name), $linkback);
 <br />
 
 <div class="titre">
-    Suivi d''intervention
+    Suivi d'intervention
 </div>
 <table class="noborder">
     <tr class="liste_titre">
         <th>Libéllé</th>
         <th>Nom de colonne</th>
         <th>Nom de la table</th>
-        <th>Type d''affichage <img border="0" style="cursor: help" title="0 - non affiché, 1 - admin seulement, 2 - admin et utilisateur" alt="help" src="<?php print DOL_URL_ROOT; ?>/theme/eldy/img/info.png" /></th>
+        <th>Type d'affichage <img border="0" style="cursor: help" title="0 - non affiché, 1 - admin seulement, 2 - admin et utilisateur" alt="help" src="<?php print DOL_URL_ROOT; ?>/theme/eldy/img/info.png" /></th>
         <th></th>
         <th>Supprimer</th>
     </tr>
