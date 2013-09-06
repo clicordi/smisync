@@ -170,7 +170,7 @@ class InterfaceSynclient
 
             try {
                 //connection bdd smi
-                $dbSmi = db_smi::getInstance()->getSmi();
+                $dbSmi = db_smi::getInstance($this->db)->getSmi();
                 
                 // recherche du code client le plus grand
                 $clicode = $dbSmi->query('SELECT cli_code FROM smi_cli ORDER BY cli_code DESC LIMIT 0, 1');
@@ -253,7 +253,7 @@ class InterfaceSynclient
         {
             try {                
                 //connection bdd smi
-                $dbSmi = db_smi::getInstance()->getSmi();                
+                $dbSmi = db_smi::getInstance($this->db)->getSmi();                
                                 
                 // on tri les clients dans les tiers
                 if($object->client != 0)

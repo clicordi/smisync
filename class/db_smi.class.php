@@ -6,6 +6,8 @@ class db_smi
     
     private $smi;
 
+    private $doli;
+
     private $url;
     private $port;
     private $name;
@@ -13,8 +15,9 @@ class db_smi
     private $pwd;
     
     //constructeur lis et ce connecte a la bdd
-    function __construct()
+    function __construct($dbDoli)
     {
+        $this->doli = $dbDoli;
         $this->read();
         $this->connect();
     }
@@ -45,80 +48,29 @@ class db_smi
         $this->pwd = $newPwd;
     }
     
-    //fonction qui écris dans le fichier config les identifiants de la bdd smi
+    //fonction qui écris dans la table les identifiants de la bdd smi
     function write()
     {
-        // on ouvre le fichier
-        $file = fopen(DOL_DOCUMENT_ROOT.'/smisync/admin/bddsmi.ini', 'r+');
-        if($file == '')
-        {
-            $file = fopen('../../smisync/admin/bddsmi.ini', 'r+');
-            if($file == '')
-            {
-                $file = fopen('../../../smisync/admin/bddsmi.ini', 'r+');
-                if($file == '')
-                {
-                    $file = fopen('../../../../smisync/admin/bddsmi.ini', 'r+');
-                }
-            }
-        }
-        //echo $file;
-        // remet le curseur en debut de fichier
-        fseek($file, 0);
-        
-        // on réécris dans le fichier
-        fputs($file, $this->url);
-        fputs($file, "\n");
-        fputs($file, $this->port);
-        fputs($file, "\n");
-        fputs($file, $this->name);
-        fputs($file, "\n");
-        fputs($file, $this->id);
-        fputs($file, "\n");
-        fputs($file, $this->pwd);
-        fputs($file, "\n");
-        
-        fclose($file);
+        //$this->doli->query("TRUNCATE TABLE llx_dbsmi");
+        $this->doli->query("INSERT INTO llx_dbsmi (dbsmi_url, dbsmi_name, dbsmi_port, dbsmi_user, dbsmi_pwd) VALUES ('".$this->url."', '".$this->name."', ".$this->port.", '".$this->id."', '".$this->pwd."')");
     }
     
-    //fonction qui lis dans le fichier config les identifiants
+    //fonction qui lis dans la table les identifiants
     function read()
     {
-        // on ouvre le fichier
-        $file = fopen(DOL_DOCUMENT_ROOT.'/smisync/admin/bddsmi.ini', 'r');
-        if($file == '')
+        $dbSmiResult = $this->doli->query("SELECT dbsmi_url, dbsmi_name, dbsmi_port, dbsmi_user, dbsmi_pwd FROM llx_dbsmi");
+        if($dbSmi = $this->doli->fetch_object($dbSmiResult))
         {
-            $file = fopen('../../smisync/admin/bddsmi.ini', 'r');
-            if($file == '')
-            {
-                $file = fopen('../../../smisync/admin/bddsmi.ini', 'r');
-                if($file == '')
-                {
-                    $file = fopen('../../../../smisync/admin/bddsmi.ini', 'r');
-                }
-            }
+            $this->setVar($dbSmi->dbsmi_url, $dbSmi->dbsmi_port, $dbSmi->dbsmi_name, $dbSmi->dbsmi_user, $dbSmi->dbsmi_pwd);
         }
-        //echo $file;
-
-        // remet le curseur en debut de fichier
-        fseek($file, 0);
-
-        // lecture des variables et retire le retour a la ligne a la fin
-        $this->url = substr(fgets($file), 0, -1);
-        $this->port = substr(fgets($file), 0, -1);
-        $this->name = substr(fgets($file), 0, -1);
-        $this->id = substr(fgets($file), 0, -1);
-        $this->pwd = substr(fgets($file), 0, -1);
-        
-        fclose($file);
     }
     
     // renvoie l'instance en cours ou la crée
-    public static function getInstance()
+    public static function getInstance($dbDoli)
     {
         if (is_null(self::$_instance))
         {
-            self::$_instance = new self();
+            self::$_instance = new self($dbDoli);
         }
         return self::$_instance;
     }

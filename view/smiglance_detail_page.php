@@ -117,7 +117,7 @@ if(isset($_REQUEST['int_code']) && !empty($_REQUEST['int_code']))
     
     try {        
         //connection bdd smi
-        $dbSmi = db_smi::getInstance()->getSmi();
+        $dbSmi = db_smi::getInstance($db)->getSmi();
         
         
         //on charge les statuts

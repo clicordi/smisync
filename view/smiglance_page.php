@@ -106,7 +106,7 @@ llxHeader('', $page_name, '');
 
 try {
     //connection bdd smi
-    $dbSmi = db_smi::getInstance()->getSmi();
+    $dbSmi = db_smi::getInstance($db)->getSmi();
 
 
     //on charge les statuts

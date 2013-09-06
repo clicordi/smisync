@@ -52,9 +52,7 @@ $action = GETPOST('action', 'alpha');
 
 try {
     //connection bdd smi
-    $dbSmi = db_smi::getInstance()->getSmi();
-    $dbSmi2 = db_smi::getInstance()->getSmi();
-
+    $dbSmi = db_smi::getInstance($db)->getSmi();
 
     //recupere tout les id dans la table des correspondances des id smi/doli
     $sql = 'SELECT idcli_doli, idcli_smi FROM llx_idcli';

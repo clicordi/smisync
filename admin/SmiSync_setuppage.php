@@ -58,7 +58,7 @@ $action = GETPOST('action', 'alpha');
   try {
     
     //connection bdd smi
-    $dbSmi = db_smi::getInstance();
+    $dbSmi = db_smi::getInstance($db);
 
     if(isset($_REQUEST['urlbdd']) && isset($_REQUEST['portbdd']) && isset($_REQUEST['nombdd']) && isset($_REQUEST['idbdd']) && isset($_REQUEST['mdpbdd'])
      && !empty($_REQUEST['urlbdd']) && !empty($_REQUEST['portbdd']) && !empty($_REQUEST['nombdd']) && !empty($_REQUEST['idbdd']) && !empty($_REQUEST['mdpbdd']))
