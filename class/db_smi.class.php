@@ -26,9 +26,13 @@ class db_smi
     function connect()
     {
         try {
+            $port = '';
+            if($this->port != 0)
+                $port = 'port='.$this->port;
+
             $pdo_options[PDO::ATTR_ERRMODE] = PDO::ERRMODE_EXCEPTION;
             // connexion a la bdd
-            $this->smi = new PDO('mysql:host='. $this->url .';dbname='. $this->name.';port='. $this->port, $this->id, $this->pwd, $pdo_options); 
+            $this->smi = new PDO('mysql:host='. $this->url .';dbname='. $this->name.';'. $port, $this->id, $this->pwd, $pdo_options); 
             
         }
         catch (Exception $e)
@@ -42,7 +46,10 @@ class db_smi
     function setVar($newUrl, $newPort, $newName, $newId, $newPwd)
     {
         $this->url = $newUrl;
-        $this->port = $newPort;
+        if(empty($newPort))
+            $this->port = 0;
+        else
+            $this->port = $newPort;
         $this->name = $newName;
         $this->id = $newId;
         $this->pwd = $newPwd;
@@ -51,7 +58,9 @@ class db_smi
     //fonction qui écris dans la table les identifiants de la bdd smi
     function write()
     {
-        //$this->doli->query("TRUNCATE TABLE llx_dbsmi");
+        // vide la table
+        $this->doli->query("DELETE FROM llx_dbsmi");
+        //on ajoute une ligne pour les identifiants
         $this->doli->query("INSERT INTO llx_dbsmi (dbsmi_url, dbsmi_name, dbsmi_port, dbsmi_user, dbsmi_pwd) VALUES ('".$this->url."', '".$this->name."', ".$this->port.", '".$this->id."', '".$this->pwd."')");
     }
     
@@ -87,6 +96,9 @@ class db_smi
 
     function getPort()
     {
+        if ($this->port == 0) {
+            return '';
+        }
         return $this->port;
     }
 

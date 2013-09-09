@@ -48,20 +48,20 @@ if (! $user->admin) {
 $action = GETPOST('action', 'alpha');
 
 /*
-* Actions
-*/
+ * Actions
+ */
 
 
 /*
  * ID BDD SMI
-  */
+ */
   try {
     
     //connection bdd smi
     $dbSmi = db_smi::getInstance($db);
 
     if(isset($_REQUEST['urlbdd']) && isset($_REQUEST['portbdd']) && isset($_REQUEST['nombdd']) && isset($_REQUEST['idbdd']) && isset($_REQUEST['mdpbdd'])
-     && !empty($_REQUEST['urlbdd']) && !empty($_REQUEST['portbdd']) && !empty($_REQUEST['nombdd']) && !empty($_REQUEST['idbdd']) && !empty($_REQUEST['mdpbdd']))
+     && !empty($_REQUEST['urlbdd']) && !empty($_REQUEST['nombdd']) && !empty($_REQUEST['idbdd']) && !empty($_REQUEST['mdpbdd']))
     {
         //met a jour les variables    
         $dbSmi->setVar($_REQUEST['urlbdd'], $_REQUEST['portbdd'], $_REQUEST['nombdd'], $_REQUEST['idbdd'], $_REQUEST['mdpbdd']);
@@ -74,7 +74,7 @@ $action = GETPOST('action', 'alpha');
 
     /*
      * Champ a afficher dans le suivi d'intervention
-      */
+     */
 
     if(isset($_REQUEST['addLabel']) && isset($_REQUEST['addColumn']) && isset($_REQUEST['addTable']) && isset($_REQUEST['addDisp'])
      && !empty($_REQUEST['addLabel']) && !empty($_REQUEST['addColumn']) && !empty($_REQUEST['addTable']) && is_numeric($_REQUEST['addDisp']))

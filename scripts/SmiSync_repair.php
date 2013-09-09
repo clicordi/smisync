@@ -99,7 +99,7 @@ try {
     $cptAjout = 0;
     $cptCliOk = 0;
     // on boucle pour chaque clients
-    while($userDoli = $db->fetch_object($usersDoli)) 
+    while($userDoli = $db->fetch_object($usersDoli))
     {
     
         // on tri les clients dans les tiers
@@ -183,9 +183,9 @@ try {
                     
                 }
 
-                if($cliSmi[$idSmi]['cli_prenom'] != $userDoli->nom)
+                if($cliSmi[$idSmi]['cli_prenom'] != utf8_decode($userDoli->nom))
                 {
-                    $cliSmi[$idSmi]['cli_prenom'] = $userDoli->nom;
+                    $cliSmi[$idSmi]['cli_prenom'] = utf8_decode($userDoli->nom);
                     $err = 1;
                 }
                 if($cliSmi[$idSmi]['cli_nom'] != ' ')
@@ -193,14 +193,14 @@ try {
                     $cliSmi[$idSmi]['cli_nom'] = ' ';
                     $err = 1;
                 }
-                if($cliSmi[$idSmi]['cli_adr1'] != $userDoli->address)
+                if($cliSmi[$idSmi]['cli_adr1'] != utf8_decode(substr($userDoli->address, 0, 50)))
                 {
-                    $cliSmi[$idSmi]['cli_adr1'] = $userDoli->address;
+                    $cliSmi[$idSmi]['cli_adr1'] = utf8_decode(substr($userDoli->address, 0, 50));
                     $err = 1;
                 }
-                if($cliSmi[$idSmi]['cli_adr2'] != $userDoli->zip.' '.$userDoli->town)
+                if($cliSmi[$idSmi]['cli_adr2'] != utf8_decode($userDoli->zip).' '.utf8_decode($userDoli->town))
                 {
-                    $cliSmi[$idSmi]['cli_adr2'] = $userDoli->zip.' '.$userDoli->town;
+                    $cliSmi[$idSmi]['cli_adr2'] = utf8_decode($userDoli->zip).' '.utf8_decode($userDoli->town);
                     $err = 1;
                 }
                 if($cliSmi[$idSmi]['cli_dep'] != substr($userDoli->zip, 0, 2))

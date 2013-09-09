@@ -135,7 +135,6 @@ if(isset($_REQUEST['int_code']) && !empty($_REQUEST['int_code']))
     
         //clauses wheres par tables
         $tWhere['smi_int'] = "WHERE int_code = '". $int_code ."'";
-        //$tWhere['smi_pdt'] = "pdt_code = (SELECT pdti_codepdt FROM smi_pdti WHERE pdti_codeint = '". $int_code ."')";
         $tWhere['smi_pdt'] = "INNER JOIN smi_pdti WHERE pdt_code = pdti_codepdt AND pdti_codeint = '". $int_code ."'";
         $tWhere['smi_tec'] = "WHERE tec_code = (SELECT int_codetec FROM smi_int WHERE int_code = '". $int_code ."')";
         $tWhere['smi_cli'] = "WHERE cli_code = (SELECT int_codecli FROM smi_int WHERE int_code = '". $int_code ."')";
@@ -203,8 +202,8 @@ if(isset($_REQUEST['int_code']) && !empty($_REQUEST['int_code']))
                     else
                         $tab .= '<tr class="impair">';
                     $iParite++;
-                    $tab .= '<td><b>'. $label .'</b></td>';
-                    $tab .= '<td>'. $info[$iCol] .'</td>';
+                    $tab .= '<td><b>'. utf8_encode($label) .'</b></td>';
+                    $tab .= '<td>'. utf8_encode($info[$iCol]) .'</td>';
                     $tab .= '</tr>';
                     $iCol++;
                 }
@@ -223,7 +222,9 @@ if(isset($_REQUEST['int_code']) && !empty($_REQUEST['int_code']))
 }
 else
 {
-    print 'pas de code intervention';
+    //pas de code d'intervention on ne peux pas afficher les details
+    header("Location: smiglance_page.php");
+    //print 'pas de code intervention';
 }
 
 

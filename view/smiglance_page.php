@@ -153,18 +153,18 @@ try {
                 $tabClot .= '<tr class="impair">';
             
             $tabClot .= '<td width="22px"><img src="'.str_replace('..', '/smi', $infosStatuts['CLOT']['icon']).'" border="0" title="" alt="cloturé" /></td>';
-            $tabClot .= '<td>'.$userInfo['int_code'].'</td>';
-            $tabClot .= '<td>'.$userInfo['int_datefinp'].'</td>';
-            $tabClot .= '<td>'.$userInfo['int_mat'].'</td>';
-            $tabClot .= '<td>'.$userInfo['int_pbm'].'</td>';
+            $tabClot .= '<td>'.utf8_encode($userInfo['int_code']).'</td>';
+            $tabClot .= '<td>'.utf8_encode($userInfo['int_datefinp']).'</td>';
+            $tabClot .= '<td>'.utf8_encode($userInfo['int_mat']).'</td>';
+            $tabClot .= '<td>'.utf8_encode($userInfo['int_pbm']).'</td>';
             if($user->admin)
             {
-                $tabClot .= '<td>'.$userInfo['int_codecli'].'</td>';
-                $tabClot .= '<td>'.$userInfo['cli_prenom'].' '.$userInfo['cli_nom'].'</td>';
+                $tabClot .= '<td>'.utf8_encode($userInfo['int_codecli']).'</td>';
+                $tabClot .= '<td>'.utf8_encode($userInfo['cli_prenom']).' '.utf8_encode($userInfo['cli_nom']).'</td>';
             }
             $tabClot .= '<td>
                                     <form method="post" action="smiglance_detail_page.php">
-                                        <input name="int_code" type="hidden" value="'.$userInfo['int_code'].'" />
+                                        <input name="int_code" type="hidden" value="'.utf8_encode($userInfo['int_code']).'" />
                                         <input class="button" type="submit" value="Détail" />
                                     </form>
                                 </td>';
@@ -180,22 +180,22 @@ try {
                 $tabNonClot .= '<tr class="impair">';
             
             $tabNonClot .= '<td width="22px"><img src="'.str_replace('..', '/smi', $infosStatuts[$userInfo['int_codestatut']]['icon']).'" border="0" title="" alt="icon statut" /></td>';
-            $tabNonClot .= '<td>'.$infosStatuts[$userInfo['int_codestatut']]['label'].'</td>';
-            $tabNonClot .= '<td>'.$userInfo['int_code'].'</td>';
-            $tabNonClot .= '<td>'.$userInfo['int_datefinp'].'</td>';
-            $tabNonClot .= '<td>'.$userInfo['int_mat'].'</td>';
-            $tabNonClot .= '<td>'.$userInfo['int_pbm'].'</td>';
+            $tabNonClot .= '<td>'.utf8_encode($infosStatuts[$userInfo['int_codestatut']]['label']).'</td>';
+            $tabNonClot .= '<td>'.utf8_encode($userInfo['int_code']).'</td>';
+            $tabNonClot .= '<td>'.utf8_encode($userInfo['int_datefinp']).'</td>';
+            $tabNonClot .= '<td>'.utf8_encode($userInfo['int_mat']).'</td>';
+            $tabNonClot .= '<td>'.utf8_encode($userInfo['int_pbm']).'</td>';
             if($user->admin)
             {
-                $tabNonClot .= '<td>'.$userInfo['int_codecli'].'</td>';
-                $tabNonClot .= '<td>'.$userInfo['cli_prenom'].' '.$userInfo['cli_nom'].'</td>';
+                $tabNonClot .= '<td>'.utf8_encode($userInfo['int_codecli']).'</td>';
+                $tabNonClot .= '<td>'.utf8_encode($userInfo['cli_prenom']).' '.utf8_encode($userInfo['cli_nom']).'</td>';
             }
             $tabNonClot .= '<td>
-                                        <form method="post" action="smiglance_detail_page.php">
-                                            <input name="int_code" type="hidden" value="'.$userInfo['int_code'].'" />
-                                            <input class="button" type="submit" value="Détail" />
-                                        </form>
-                                    </td>';
+                                <form method="post" action="smiglance_detail_page.php">
+                                    <input name="int_code" type="hidden" value="'.utf8_encode($userInfo['int_code']).'" />
+                                    <input class="button" type="submit" value="Détail" />
+                                </form>
+                            </td>';
             $tabNonClot .= '</tr>';
             
             $iNonClot++;
