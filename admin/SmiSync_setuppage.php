@@ -73,7 +73,7 @@ $action = GETPOST('action', 'alpha');
     $dbSmi->connect();
 
     /*
-     * Champ a afficher dans le suivi d'intervention
+     * Champ a afficher dans le detail d'une intervention
      */
 
     if(isset($_REQUEST['addLabel']) && isset($_REQUEST['addColumn']) && isset($_REQUEST['addTable']) && isset($_REQUEST['addDisp'])
@@ -103,13 +103,22 @@ $action = GETPOST('action', 'alpha');
         //DELETE
         $db->query("DELETE FROM llx_cfgdetail WHERE cfgdetail_rowid = $delId");
     }
+    else if(isset($_REQUEST['delAll']) && $_REQUEST['delAll'] == 'delete all')
+    {
+        $db->query("DELETE FROM llx_cfgdetail");
+    }
     
     $detailsCols = $db->query("SELECT cfgdetail_rowid, cfgdetail_column, cfgdetail_label, cfgdetail_table, cfgdetail_display FROM llx_cfgdetail ORDER BY cfgdetail_table");
     
     $tabCol2disp = '';
+    $iParite = 0;
     while($detailsCol = $db->fetch_object($detailsCols))
     {
-        $tabCol2disp .= '<tr>';
+        $iParite++;
+        if($iParite%2)
+            $tabCol2disp .= '<tr class="impair">';
+        else
+            $tabCol2disp .= '<tr class="pair">';
         $tabCol2disp .= '<form method="post" action="">';
         $tabCol2disp .= '<td><input type="text" name="modLabel" value="'. $detailsCol->cfgdetail_label .'" /></td>';
         $tabCol2disp .= '<td><input type="text" name="modColumn" value="'. $detailsCol->cfgdetail_column .'" /></td>';
@@ -150,7 +159,7 @@ print_fiche_titre($langs->trans($page_name), $linkback);
 <br />
 <div class="titre">
     Lancer le script de comparaison des bases de données et met à jour les clients de SMI si une différence est trouvée.
-    <a class="button" href="<?php print DOL_URL_ROOT; ?>/smisync/scripts/SmiSync_repair.php" style="text-decoration: none;">Lancer</a>
+    <a class="button" href="../scripts/SmiSync_repair.php" style="text-decoration: none;">Lancer</a>
 </div>
 
 <br />
@@ -195,7 +204,7 @@ print_fiche_titre($langs->trans($page_name), $linkback);
 <br />
 
 <div class="titre">
-    Suivi d'intervention
+    Lignes à afficher dans le détail d'une intervention
 </div>
 <table class="noborder">
     <tr class="liste_titre">
@@ -207,7 +216,7 @@ print_fiche_titre($langs->trans($page_name), $linkback);
         <th>Supprimer</th>
     </tr>
     <?php print $tabCol2disp; ?>
-    <tr>
+    <tr class="<?php if($iParite%2) print 'pair'; else print 'impair';?>">
         <form method="post" action="">
             <td><input type="text" name="addLabel" /></td>
             <td><input type="text" name="addColumn" /></td>
@@ -215,11 +224,14 @@ print_fiche_titre($langs->trans($page_name), $linkback);
             <td><input type="text" name="addDisp" maxlength="1" size="3" value="1" /></td>
             <td><input class="button" type="submit" value="Ajouter" /></td>
         </form>
-        <td></td>
+        <td><form method="post" action=""><input type="hidden" name="delAll" value="delete all" /><input class="button" type="submit" value="Vider le tableau" /></form></td>
     </tr>
     
 </table>
-
+<div class="titre">
+    Remplir la table de detail avec des valeurs par defaut
+    <a class="button" href="../scripts/data_cfgdetail.php" style="text-decoration: none;">Remplir</a>
+</div>
 
 
 <?php
