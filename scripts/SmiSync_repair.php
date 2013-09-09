@@ -54,22 +54,47 @@ try {
     //connection bdd smi
     $dbSmi = db_smi::getInstance($db)->getSmi();
 
-    /*/ synchroniser les tables de civilités
-    $civSmi = $dbSmi->query('SELECT civ_code, civ_desc FROM smi_civ');
-    $cliSmi = array();
-    $i = 0;
-    while($userSmi = $usersSmi->fetch(PDO::FETCH_ASSOC))
+
+    // Synchroniser les tables de civilités
+    // On recupere toute la table de smi (seulement les civilitée supprimable)
+    //$civSmiAlls = $dbSmi->query('SELECT civ_code, civ_desc FROM smi_civ WHERE civ_delok = 1');
+    $civSmiAlls = $dbSmi->query('SELECT civ_code, civ_desc FROM smi_civ');
+    $civSmi = array();
+    $iCivMod = 0;
+    $iCivAdd = 0;
+    $iCivOk = 0;
+    while($civSmiAll = $civSmiAlls->fetch(PDO::FETCH_ASSOC))
     {
-        foreach($userSmi as $key => $val)
-        {
-            $cliSmi[$userSmi['cli_id']][$key] = $val;
-        }
-        
+        $civSmi[$civSmiAll['civ_code']] = $civSmiAll['civ_desc'];
     }
 
+    // On parcourt Toutes les civilitées dans dolibarr
     $sql = 'SELECT code, civilite FROM llx_c_civilite';
-    $civDoli = $db->query($sql);
-    //*/
+    $civsDoli = $db->query($sql);
+    while($civDoli = $db->fetch_object($civsDoli))
+    {
+        // si pas presente dans smi
+        if(!isset($civSmi[$civDoli->code]))
+        {
+            //on l'ajoute
+            $sql = "INSERT INTO smi_civ (civ_code, civ_desc, civ_delok) VALUES ('".$civDoli->code."','".utf8_decode($civDoli->civilite)."', 1)";
+            $dbSmi->query($sql);
+            $iCivAdd++;
+        }
+        // si le libellé n'est pas egale
+        else if($civSmi[$civDoli->code] != utf8_decode($civDoli->civilite))
+        {
+            // on l'update
+            // $sql = "UPDATE smi_civ SET civ_desc = '".$civDoli->civilite."' WHERE civ_code = '".$civDoli->code."' AND civ_delok = 1";
+            $sql = "UPDATE smi_civ SET civ_desc = '".utf8_decode($civDoli->civilite)."' WHERE civ_code = '".$civDoli->code."'";
+            $dbSmi->query($sql);
+            $iCivMod++;
+        }
+        else
+        {
+            $iCivOk++;
+        }
+    }
 
 
 
@@ -176,42 +201,11 @@ try {
                     $cliSmi[$idSmi]['cli_type'] = '2';
                     $err = 1;
                 }
-                /*/ a refaire !!!!!!!!!!!!!!!!
-                if(isset($contactUser->civilite))
+                if(isset($contactUser->civilite) && $cliSmi[$idSmi]['cli_civilite'] != $contactUser->civilite)
                 {
-                    if($contactUser->civilite == 'MME' && $cliSmi[$idSmi]['cli_civilite'] != 'MME')
-                    {
-                        echo 'civ0 '.$cliSmi[$idSmi]['cli_civilite'] .' / '.$contactUser->civilite;
-                        $cliSmi[$idSmi]['cli_civilite'] = 'MME';
-                        $err = 1;
-                        
-                    }
-                    else if($contactUser->civilite == 'MLE' && $cliSmi[$idSmi]['cli_civilite'] != 'MELLE') 
-                    {
-                        echo 'civ1 '.$cliSmi[$idSmi]['cli_civilite'] .' / '.$contactUser->civilite;
-                        $cliSmi[$idSmi]['cli_civilite'] = 'MELLE';
-                        $cli_civilite = 'MELLE';  // modifier cette valeur en MME si l'on ne veux pas insulter les madames
-                        $err = 1;
-                        
-                    }
-                    else if($cliSmi[$idSmi]['cli_civilite'] == 'MME')
-                    {
-
-                    }
-                    else if($cliSmi[$idSmi]['cli_civilite'] == 'MELLE')
-                    {
-                        
-                    }
-                    else if($cliSmi[$idSmi]['cli_civilite'] != 'M.')
-                    {
-                        echo 'civ2 '.$cliSmi[$idSmi]['cli_civilite'] .' / '.$contactUser->civilite;
-                        $cliSmi[$idSmi]['cli_civilite'] = 'M.';
-                        $err = 1;
-                        
-                    }
+                    $cliSmi[$idSmi]['cli_civilite'] = $contactUser->civilite;
+                    $err = 1;
                 }
-                //*/
-
                 if($cliSmi[$idSmi]['cli_prenom'] != utf8_decode($userDoli->nom))
                 {
                     $cliSmi[$idSmi]['cli_prenom'] = utf8_decode($userDoli->nom);
@@ -388,6 +382,10 @@ print_fiche_titre($langs->trans($page_name), $linkback);
 
 
 ?>
+<div class="titre">Nombre de civilitée(s) modifé(s) : <?php echo $iCivMod; ?></div>
+<div class="titre">Nombre de civilitée(s) ajouté(s) : <?php echo $iCivAdd; ?></div>
+<div class="titre">Nombre de civilitée(s) sans problème(s) : <?php echo $iCivOk; ?></div>
+<br />
 <div class="titre">Nombre de client(s) modifé(s) : <?php echo $cptModif; ?></div>
 <div class="titre">Nombre de client(s) ajouté(s) : <?php echo $cptAjout; ?></div>
 <div class="titre">Nombre de client(s) sans problème(s) : <?php echo $cptCliOk; ?></div>

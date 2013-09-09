@@ -195,14 +195,7 @@ class InterfaceSynclient
                     $cli_rcs = '';
                     $cli_ape = '';
                     $cli_tvai = '';
-                    /*
-                    if($object->civilite == 'MME')
-                        $cli_civilite = 'MME';
-                    else if($object->civilite == 'MLE')
-                        $cli_civilite = 'MELLE';  // modifier cette valeur en MME si l'on ne veux pas insulter les madames
-                    else
-                        $cli_civilite = 'M.';
-                    */
+
                     $cli_civilite = $object->civilite;
 
                     $cli_prenom = addslashes($object->nom); // mis dans le champ prenom pour raison de formatage de text dans le champ nom
@@ -268,14 +261,7 @@ class InterfaceSynclient
                     
                     // INFOS CLIENTS
                     $cli_datemod = date('Y-m-d'); // date du jour
-                    /*
-                    if($object->civilite == 'MME')
-                        $cli_civilite = 'MME';
-                    else if($object->civilite == 'MLE')
-                        $cli_civilite = 'MELLE';  // modifier cette valeur en MME si l'on ne veux pas insulter les madames
-                    else
-                        $cli_civilite = 'M.';
-                    */
+
                     $cli_civilite = $object->civilite;
 
                     $cli_prenom = addslashes($object->nom); // mis dans le champ prenom pour raison de formatage de text dans le champ nom
