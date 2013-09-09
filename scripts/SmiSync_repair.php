@@ -54,6 +54,25 @@ try {
     //connection bdd smi
     $dbSmi = db_smi::getInstance($db)->getSmi();
 
+    /*/ synchroniser les tables de civilités
+    $civSmi = $dbSmi->query('SELECT civ_code, civ_desc FROM smi_civ');
+    $cliSmi = array();
+    $i = 0;
+    while($userSmi = $usersSmi->fetch(PDO::FETCH_ASSOC))
+    {
+        foreach($userSmi as $key => $val)
+        {
+            $cliSmi[$userSmi['cli_id']][$key] = $val;
+        }
+        
+    }
+
+    $sql = 'SELECT code, civilite FROM llx_c_civilite';
+    $civDoli = $db->query($sql);
+    //*/
+
+
+
     //recupere tout les id dans la table des correspondances des id smi/doli
     $sql = 'SELECT idcli_doli, idcli_smi FROM llx_idcli';
     $idssync = $db->query($sql);
@@ -93,7 +112,8 @@ try {
     //echo '</pre>';
     
     //je recupere les infos des tiers de dolibarr
-    $usersDoli = $db->query('SELECT soc.rowid, nom, soc.address, soc.zip, soc.town, soc.phone, soc.fax, soc.email, client, civilite, phone_mobile FROM llx_societe AS soc INNER JOIN llx_socpeople WHERE soc.rowid =  fk_soc');
+    // $usersDoli = $db->query('SELECT soc.rowid, nom, soc.address, soc.zip, soc.town, soc.phone, soc.fax, soc.email, client, civilite, phone_mobile FROM llx_societe AS soc INNER JOIN llx_socpeople WHERE soc.rowid =  fk_soc');
+    $usersDoli = $db->query('SELECT rowid, nom, address, zip, town, phone, fax, email, client FROM llx_societe');
     
     $cptModif = 0;
     $cptAjout = 0;
@@ -105,6 +125,11 @@ try {
         // on tri les clients dans les tiers
     	if($userDoli->client != 0)
     	{
+            //si le client a un contact (pour plus d'info)
+            $contactUserDoli = $db->query('SELECT civilite, phone_mobile FROM llx_socpeople WHERE fk_soc = '.$userDoli->rowid);
+            $contactUser = $db->fetch_object($contactUserDoli);
+            
+            
             //on verifie si notre client est present dans la table des correspondances
             // et on test si notre client est dans la bdd smi
             if(isset($idcli[$userDoli->rowid]) && isset($cliSmi[$idcli[$userDoli->rowid]]))
@@ -151,37 +176,41 @@ try {
                     $cliSmi[$idSmi]['cli_type'] = '2';
                     $err = 1;
                 }
-                // a refaire !!!!!!!!!!!!!!!!
-                if($userDoli->civilite == 'MME' && $cliSmi[$idSmi]['cli_civilite'] != 'MME')
+                /*/ a refaire !!!!!!!!!!!!!!!!
+                if(isset($contactUser->civilite))
                 {
-                    echo 'civ0 '.$cliSmi[$idSmi]['cli_civilite'] .' / '.$userDoli->civilite;
-                    $cliSmi[$idSmi]['cli_civilite'] = 'MME';
-                    $err = 1;
-                    
-                }
-                else if($userDoli->civilite == 'MLE' && $cliSmi[$idSmi]['cli_civilite'] != 'MELLE') 
-                {
-                    echo 'civ1 '.$cliSmi[$idSmi]['cli_civilite'] .' / '.$userDoli->civilite;
-                    $cliSmi[$idSmi]['cli_civilite'] = 'MELLE';
-                    $cli_civilite = 'MELLE';  // modifier cette valeur en MME si l'on ne veux pas insulter les madames
-                    $err = 1;
-                    
-                }
-                else if($cliSmi[$idSmi]['cli_civilite'] == 'MME')
-                {
+                    if($contactUser->civilite == 'MME' && $cliSmi[$idSmi]['cli_civilite'] != 'MME')
+                    {
+                        echo 'civ0 '.$cliSmi[$idSmi]['cli_civilite'] .' / '.$contactUser->civilite;
+                        $cliSmi[$idSmi]['cli_civilite'] = 'MME';
+                        $err = 1;
+                        
+                    }
+                    else if($contactUser->civilite == 'MLE' && $cliSmi[$idSmi]['cli_civilite'] != 'MELLE') 
+                    {
+                        echo 'civ1 '.$cliSmi[$idSmi]['cli_civilite'] .' / '.$contactUser->civilite;
+                        $cliSmi[$idSmi]['cli_civilite'] = 'MELLE';
+                        $cli_civilite = 'MELLE';  // modifier cette valeur en MME si l'on ne veux pas insulter les madames
+                        $err = 1;
+                        
+                    }
+                    else if($cliSmi[$idSmi]['cli_civilite'] == 'MME')
+                    {
 
+                    }
+                    else if($cliSmi[$idSmi]['cli_civilite'] == 'MELLE')
+                    {
+                        
+                    }
+                    else if($cliSmi[$idSmi]['cli_civilite'] != 'M.')
+                    {
+                        echo 'civ2 '.$cliSmi[$idSmi]['cli_civilite'] .' / '.$contactUser->civilite;
+                        $cliSmi[$idSmi]['cli_civilite'] = 'M.';
+                        $err = 1;
+                        
+                    }
                 }
-                else if($cliSmi[$idSmi]['cli_civilite'] == 'MELLE')
-                {
-                    
-                }
-                else if($cliSmi[$idSmi]['cli_civilite'] != 'M.')
-                {
-                    echo 'civ2 '.$cliSmi[$idSmi]['cli_civilite'] .' / '.$userDoli->civilite;
-                    $cliSmi[$idSmi]['cli_civilite'] = 'M.';
-                    $err = 1;
-                    
-                }
+                //*/
 
                 if($cliSmi[$idSmi]['cli_prenom'] != utf8_decode($userDoli->nom))
                 {
@@ -233,9 +262,9 @@ try {
                     $cliSmi[$idSmi]['cli_fax'] = $userDoli->fax;
                     $err = 1;
                 }
-                if($cliSmi[$idSmi]['cli_telp'] != $userDoli->phone_mobile)
+                if(isset($contactUser->phone_mobile) && $cliSmi[$idSmi]['cli_telp'] != $contactUser->phone_mobile)
                 {
-                    $cliSmi[$idSmi]['cli_telp'] = $userDoli->phone_mobile;
+                    $cliSmi[$idSmi]['cli_telp'] = $contactUser->phone_mobile;
                     $err = 1;
                 }
                 if($cliSmi[$idSmi]['cli_email'] != $userDoli->email)
@@ -283,14 +312,14 @@ try {
                 $cli_rcs = '';
                 $cli_ape = '';
                 $cli_tvai = '';
-    
+                /*
                 if($userDoli->civilite == 'MME')
                     $cli_civilite = 'MME';
                 else if($userDoli->civilite == 'MLE')
                     $cli_civilite = 'MELLE';  // modifier cette valeur en MME si l'on ne veux pas insulter les madames
                 else
                     $cli_civilite = 'M.';
-    
+                */
                 $cli_prenom = addslashes($userDoli->nom); // mis dans le champ prenom pour raison de formatage de text dans le champ nom
                 $cli_nom = ' ';
                 $cli_adr1 = addslashes($userDoli->address);
@@ -359,7 +388,6 @@ print_fiche_titre($langs->trans($page_name), $linkback);
 
 
 ?>
-<div class="titre">Problème des accents !</div>
 <div class="titre">Nombre de client(s) modifé(s) : <?php echo $cptModif; ?></div>
 <div class="titre">Nombre de client(s) ajouté(s) : <?php echo $cptAjout; ?></div>
 <div class="titre">Nombre de client(s) sans problème(s) : <?php echo $cptCliOk; ?></div>

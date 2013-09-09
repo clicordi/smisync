@@ -195,15 +195,16 @@ class InterfaceSynclient
                     $cli_rcs = '';
                     $cli_ape = '';
                     $cli_tvai = '';
-                    
+                    /*
                     if($object->civilite == 'MME')
                         $cli_civilite = 'MME';
                     else if($object->civilite == 'MLE')
                         $cli_civilite = 'MELLE';  // modifier cette valeur en MME si l'on ne veux pas insulter les madames
                     else
                         $cli_civilite = 'M.';
-                    
-                    //$cli_civilite = $object->civilite;
+                    */
+                    $cli_civilite = $object->civilite;
+
                     $cli_prenom = addslashes($object->nom); // mis dans le champ prenom pour raison de formatage de text dans le champ nom
                     $cli_nom = ' ';
                     $cli_adr1 = addslashes($object->address);
@@ -267,14 +268,16 @@ class InterfaceSynclient
                     
                     // INFOS CLIENTS
                     $cli_datemod = date('Y-m-d'); // date du jour
-                    
+                    /*
                     if($object->civilite == 'MME')
                         $cli_civilite = 'MME';
                     else if($object->civilite == 'MLE')
                         $cli_civilite = 'MELLE';  // modifier cette valeur en MME si l'on ne veux pas insulter les madames
                     else
                         $cli_civilite = 'M.';
-        
+                    */
+                    $cli_civilite = $object->civilite;
+
                     $cli_prenom = addslashes($object->nom); // mis dans le champ prenom pour raison de formatage de text dans le champ nom
                     $cli_adr1 = addslashes($object->address);
                     $cli_adr2 = addslashes($object->zip).' '.addslashes($object->town); // code pour la ville (2 ligne en dessous) un peu special je le met donc dans ce champ
