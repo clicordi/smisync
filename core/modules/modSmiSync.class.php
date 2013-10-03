@@ -52,17 +52,17 @@ class modSmiSync extends DolibarrModules
 
 		// Family can be 'crm','financial','hr','projects','products','ecm','technic','other'
 		// It is used to group modules in module setup page
-		$this->family = "interfaces";
+		$this->family = "SMI";
 		// Module label (no space allowed), used if translation string 'ModuleXXXName' not found (where XXX is value of numeric property 'numero' of module)
 		$this->name = preg_replace('/^mod/i','',get_class($this));
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
-		$this->description = "Description of module SmiSync";
+		$this->description = "Ce module apporte une synchronisation partielle avec SMI";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
 		$this->version = '1.0';
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
 		// Where to store the module in setup page (0=common,1=interface,2=others,3=very specific)
-		$this->special = 0;
+		$this->special = 1;
 		// Name of image file used for this module.
 		// If file is in theme/yourtheme/img directory under name object_pictovalue.png, use this->picto='pictovalue'
 		// If file is in module/img directory under name object_pictovalue.png, use this->picto='pictovalue@module'
@@ -196,7 +196,7 @@ class modSmiSync extends DolibarrModules
 									'perms'=>'1',			                // Use 'perms'=>'$user->rights->smiglance->level1->level2' if you want your menu with a permission rules
 									'target'=>'',
 									'user'=>2);				                // 0=Menu for internal users, 1=external users, 2=both
-		// $r++;
+		$r++;
 		// $this->menu[$r]=array(	'fk_menu'=>0,			                // Put 0 if this is a top menu
 		//							'type'=>'top',			                // This is a Top menu entry
 		//							'titre'=>'SmiSync top menu',
