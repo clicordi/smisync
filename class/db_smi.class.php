@@ -8,13 +8,14 @@ class db_smi
 
     private $doli;
 
-    private $url;
-    private $port;
-    private $name;
-    private $id;
-    private $pwd;
+    private $url; //url de la BDD SMI
+    private $port; //port d'écoute de la BDD SMI
+    private $name; //nom de la BDD SMI
+    private $id; //identifiant de connexion à la BDD SMI
+    private $pwd; //mot de passe de l'identifiant
+    private $tpref; //prefixe des tables de la BDD SMI
     
-    //constructeur lis et ce connecte a la bdd
+    //constructeur lis et ce connecte à la bdd
     function __construct($dbDoli)
     {
         $this->doli = $dbDoli;
@@ -43,7 +44,7 @@ class db_smi
     }
 
     //fonction qui met a jour les variables de la classe
-    function setVar($newUrl, $newPort, $newName, $newId, $newPwd)
+    function setVar($newUrl, $newPort, $newName, $newId, $newPwd, $newTPref)
     {
         $this->url = $newUrl;
         if(empty($newPort))
@@ -53,6 +54,7 @@ class db_smi
         $this->name = $newName;
         $this->id = $newId;
         $this->pwd = $newPwd;
+        $this->tpref = $newTPref
     }
     
     //fonction qui écris dans la table les identifiants de la bdd smi
@@ -61,16 +63,16 @@ class db_smi
         // vide la table
         $this->doli->query("DELETE FROM llx_dbsmi");
         //on ajoute une ligne pour les identifiants
-        $this->doli->query("INSERT INTO llx_dbsmi (dbsmi_url, dbsmi_name, dbsmi_port, dbsmi_user, dbsmi_pwd) VALUES ('".$this->url."', '".$this->name."', ".$this->port.", '".$this->id."', '".$this->pwd."')");
+        $this->doli->query("INSERT INTO llx_dbsmi (dbsmi_url, dbsmi_name, dbsmi_port, dbsmi_user, dbsmi_pwd, dbsmi_tpref) VALUES ('".$this->url."', '".$this->name."', ".$this->port.", '".$this->id."', '".$this->pwd."', '".$this->tpref"'")");
     }
     
     //fonction qui lis dans la table les identifiants
     function read()
     {
-        $dbSmiResult = $this->doli->query("SELECT dbsmi_url, dbsmi_name, dbsmi_port, dbsmi_user, dbsmi_pwd FROM llx_dbsmi");
+        $dbSmiResult = $this->doli->query("SELECT dbsmi_url, dbsmi_name, dbsmi_port, dbsmi_user, dbsmi_pwd, dbsmi_tpref FROM llx_dbsmi");
         if($dbSmi = $this->doli->fetch_object($dbSmiResult))
         {
-            $this->setVar($dbSmi->dbsmi_url, $dbSmi->dbsmi_port, $dbSmi->dbsmi_name, $dbSmi->dbsmi_user, $dbSmi->dbsmi_pwd);
+            $this->setVar($dbSmi->dbsmi_url, $dbSmi->dbsmi_port, $dbSmi->dbsmi_name, $dbSmi->dbsmi_user, $dbSmi->dbsmi_pwd, $dbSmi->dbsmi_tpref);
         }
     }
     
@@ -115,6 +117,10 @@ class db_smi
     function getPwd()
     {
         return $this->pwd;
+    }
+    function getTpref()
+    {
+        return $this->tpref;
     }
 
 }
