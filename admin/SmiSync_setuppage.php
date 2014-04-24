@@ -60,11 +60,11 @@ $action = GETPOST('action', 'alpha');
     //connection bdd smi
     $dbSmi = db_smi::getInstance($db);
 
-    if(isset($_REQUEST['urlbdd']) && isset($_REQUEST['portbdd']) && isset($_REQUEST['nombdd']) && isset($_REQUEST['idbdd']) && isset($_REQUEST['mdpbdd'])
-     && !empty($_REQUEST['urlbdd']) && !empty($_REQUEST['nombdd']) && !empty($_REQUEST['idbdd']) && !empty($_REQUEST['mdpbdd']))
+    if(isset($_REQUEST['urlbdd']) && isset($_REQUEST['portbdd']) && isset($_REQUEST['nombdd']) && isset($_REQUEST['idbdd']) && isset($_REQUEST['mdpbdd']) && isset($_REQUEST['tprefbdd'])
+     && !empty($_REQUEST['urlbdd']) && !empty($_REQUEST['nombdd']) && !empty($_REQUEST['idbdd']) && !empty($_REQUEST['mdpbdd']) && !empty($_REQUEST['tprefbdd']))
     {
         //met a jour les variables    
-        $dbSmi->setVar($_REQUEST['urlbdd'], $_REQUEST['portbdd'], $_REQUEST['nombdd'], $_REQUEST['idbdd'], $_REQUEST['mdpbdd']);
+        $dbSmi->setVar($_REQUEST['urlbdd'], $_REQUEST['portbdd'], $_REQUEST['nombdd'], $_REQUEST['idbdd'], $_REQUEST['mdpbdd'], $_REQUEST['tprefbdd']);
 
         $dbSmi->write();
     }
@@ -195,7 +195,11 @@ print_fiche_titre($langs->trans($page_name), $linkback);
             <td><input id="mdpbdd" name="mdpbdd" type="password" value="<?php print $dbSmi->getPwd(); ?>" /></td>
         </tr>
         <tr class="pair">
+            <td><label for="tprefbdd">Préfixe des tables</label></td>
+            <td><input id="tprefbdd" name="tprefbdd" type="text" value="<?php print $dbSmi->getTpref(); ?>" /></td>
+        <tr class="impair">
             <td colspan="2" align="center"><input class="button" type="submit" value="Modifier" /></td>
+        </tr>
         </tr>
     </table>
 </form>
