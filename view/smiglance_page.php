@@ -111,7 +111,7 @@ try {
 
     //on charge les statuts
     // recupere toute les infos des statuts
-    $infosStatutsbdd = $dbSmi->query("SELECT statut_code, statut_desc, statut_img FROM smi_statut");
+    $infosStatutsbdd = $dbSmi->query("SELECT statut_code, statut_desc, statut_img FROM CONCAT('$tpref', '_statut')");
     // on met ca dans un tableau
     $infosStatuts = array();
     while($infosStatutbdd = $infosStatutsbdd->fetch(PDO::FETCH_BOTH))
