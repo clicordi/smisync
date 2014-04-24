@@ -192,7 +192,7 @@ print_fiche_titre($langs->trans($page_name), $linkback);
         </tr>
         <tr class="impair">
             <td><label for="mdpbdd">mot de passe</label></td>
-            <td><input id="mdpbdd" name="mdpbdd" type="text" value="<?php print $dbSmi->getPwd(); ?>" /></td>
+            <td><input id="mdpbdd" name="mdpbdd" type="password" value="<?php print $dbSmi->getPwd(); ?>" /></td>
         </tr>
         <tr class="pair">
             <td colspan="2" align="center"><input class="button" type="submit" value="Modifier" /></td>
