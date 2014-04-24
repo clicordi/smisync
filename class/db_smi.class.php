@@ -54,7 +54,7 @@ class db_smi
         $this->name = $newName;
         $this->id = $newId;
         $this->pwd = $newPwd;
-        $this->tpref = $newTPref
+        $this->tpref = $newTPref;
     }
     
     //fonction qui écris dans la table les identifiants de la bdd smi
@@ -63,7 +63,7 @@ class db_smi
         // vide la table
         $this->doli->query("DELETE FROM llx_dbsmi");
         //on ajoute une ligne pour les identifiants
-        $this->doli->query("INSERT INTO llx_dbsmi (dbsmi_url, dbsmi_name, dbsmi_port, dbsmi_user, dbsmi_pwd, dbsmi_tpref) VALUES ('".$this->url."', '".$this->name."', ".$this->port.", '".$this->id."', '".$this->pwd."', '".$this->tpref"')");
+        $this->doli->query("INSERT INTO llx_dbsmi (dbsmi_url, dbsmi_name, dbsmi_port, dbsmi_user, dbsmi_pwd, dbsmi_tpref) VALUES ('".$this->url."', '".$this->name."', ".$this->port.", '".$this->id."', MD5('".$this->pwd."'), '".$this->tpref"');
     }
     
     //fonction qui lis dans la table les identifiants
