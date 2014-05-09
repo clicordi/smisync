@@ -170,10 +170,11 @@ class InterfaceSynclient
 
             try {
                 //connection bdd smi
-                $dbSmi = db_smi::getInstance($this->db)->getSmi();
-                
+                $dbSmiInfo = db_smi::getInstance($db);
+                $dbSmi = $dbSmiInfo->getSmi();
+
                 // recherche du code client le plus grand
-                $clicode = $dbSmi->query('SELECT cli_code FROM smi_cli ORDER BY cli_code DESC LIMIT 0, 1');
+                $clicode = $dbSmi->query("SELECT cli_code FROM ".$dbSmiInfo->getTpref()."_cli ORDER BY cli_code DESC LIMIT 0, 1");
                 $clicod = $clicode->fetch(PDO::FETCH_BOTH);
                 $cli_code =  $clicod['cli_code'];
                     
@@ -221,12 +222,12 @@ class InterfaceSynclient
                     $cli_modfact = '0';
                     
                     // j'insert le client dolibarr dans la bdd de smi
-                    $myquery = "INSERT INTO smi_cli (cli_cat, cli_datecrea, cli_codecrea, cli_datemod, cli_prop, cli_codemod, cli_code, cli_pass, cli_type, cli_ste, cli_rcs, cli_ape, cli_tvai, cli_civilite, cli_prenom, cli_nom, cli_adr1, cli_adr2, cli_dep, cli_ville, cli_codepays, cli_codeadev, cli_telf, cli_fax, cli_telp, cli_email, cli_mess, cli_notaa, cli_notat, cli_ccpta, cli_ccptasp, cli_cpta, cli_prev, cli_modfact) VALUES ('$cli_cat', '$cli_datecrea', '$cli_codecrea', '$cli_datemod', '$cli_prop', '$cli_codemod', '$cli_code', '$cli_pass', '$cli_type', '$cli_ste', '$cli_rcs', '$cli_ape', '$cli_tvai', '$cli_civilite', '$cli_prenom', '$cli_nom', '$cli_adr1', '$cli_adr2', '$cli_dep', '$cli_ville', '$cli_codepays', '$cli_codeadev', '$cli_telf', '$cli_fax', '$cli_telp', '$cli_email', '$cli_mess', '$cli_notaa', '$cli_notat', '$cli_ccpta', '$cli_ccptasp', '$cli_cpta', '$cli_prev', '$cli_modfact')";
+                    $myquery = "INSERT INTO ".$dbSmiInfo->getTpref()."_cli (cli_cat, cli_datecrea, cli_codecrea, cli_datemod, cli_prop, cli_codemod, cli_code, cli_pass, cli_type, cli_ste, cli_rcs, cli_ape, cli_tvai, cli_civilite, cli_prenom, cli_nom, cli_adr1, cli_adr2, cli_dep, cli_ville, cli_codepays, cli_codeadev, cli_telf, cli_fax, cli_telp, cli_email, cli_mess, cli_notaa, cli_notat, cli_ccpta, cli_ccptasp, cli_cpta, cli_prev, cli_modfact) VALUES ('$cli_cat', '$cli_datecrea', '$cli_codecrea', '$cli_datemod', '$cli_prop', '$cli_codemod', '$cli_code', '$cli_pass', '$cli_type', '$cli_ste', '$cli_rcs', '$cli_ape', '$cli_tvai', '$cli_civilite', '$cli_prenom', '$cli_nom', '$cli_adr1', '$cli_adr2', '$cli_dep', '$cli_ville', '$cli_codepays', '$cli_codeadev', '$cli_telf', '$cli_fax', '$cli_telp', '$cli_email', '$cli_mess', '$cli_notaa', '$cli_notat', '$cli_ccpta', '$cli_ccptasp', '$cli_cpta', '$cli_prev', '$cli_modfact')";
                     // echo $myquery.'<br>';
                     $dbSmi->query($myquery);
                     
                     //j'insert les id doli et smi dans la table des correspondances
-                    $lastSmiId1 = $dbSmi->query("SELECT LAST_INSERT_ID() FROM smi_cli");
+                    $lastSmiId1 = $dbSmi->query("SELECT LAST_INSERT_ID() FROM ".$dbSmiInfo->getTpref()."_cli");
                     $lastSmiId0 = $lastSmiId1->fetch(PDO::FETCH_BOTH);
                     $lastSmiId =  $lastSmiId0[0];
                     
@@ -248,7 +249,8 @@ class InterfaceSynclient
         {
             try {                
                 //connection bdd smi
-                $dbSmi = db_smi::getInstance($this->db)->getSmi();                
+                $dbSmiInfo = db_smi::getInstance($db);
+                $dbSmi = $dbSmiInfo->getSmi();
                                 
                 // on tri les clients dans les tiers
                 if($object->client != 0)
@@ -278,7 +280,7 @@ class InterfaceSynclient
                     if(!is_numeric($cliSmiId))
                     {
                         // recherche du code client le plus grand
-                        $clicode = $dbSmi->query('SELECT cli_code FROM smi_cli ORDER BY cli_code DESC LIMIT 0, 1');
+                        $clicode = $dbSmi->query("SELECT cli_code FROM ".$dbSmiInfo->getTpref()."_cli ORDER BY cli_code DESC LIMIT 0, 1");
                         $clicod = $clicode->fetch(PDO::FETCH_BOTH);
                         $cli_code =  $clicod['cli_code'];
 
@@ -314,10 +316,10 @@ class InterfaceSynclient
                         $cli_modfact = '0';
                         
                         // j'insert le client dolibarr dans la bdd de smi
-                        $myquery = "INSERT INTO smi_cli (cli_cat, cli_datecrea, cli_codecrea, cli_datemod, cli_prop, cli_codemod, cli_code, cli_pass, cli_type, cli_ste, cli_rcs, cli_ape, cli_tvai, cli_civilite, cli_prenom, cli_nom, cli_adr1, cli_adr2, cli_dep, cli_ville, cli_codepays, cli_codeadev, cli_telf, cli_fax, cli_telp, cli_email, cli_mess, cli_notaa, cli_notat, cli_ccpta, cli_ccptasp, cli_cpta, cli_prev, cli_modfact) VALUES ('$cli_cat', '$cli_datecrea', '$cli_codecrea', '$cli_datemod', '$cli_prop', '$cli_codemod', '$cli_code', '$cli_pass', '$cli_type', '$cli_ste', '$cli_rcs', '$cli_ape', '$cli_tvai', '$cli_civilite', '$cli_prenom', '$cli_nom', '$cli_adr1', '$cli_adr2', '$cli_dep', '$cli_ville', '$cli_codepays', '$cli_codeadev', '$cli_telf', '$cli_fax', '$cli_telp', '$cli_email', '$cli_mess', '$cli_notaa', '$cli_notat', '$cli_ccpta', '$cli_ccptasp', '$cli_cpta', '$cli_prev', '$cli_modfact')";
+                        $myquery = "INSERT INTO ".$dbSmiInfo->getTpref()."_cli (cli_cat, cli_datecrea, cli_codecrea, cli_datemod, cli_prop, cli_codemod, cli_code, cli_pass, cli_type, cli_ste, cli_rcs, cli_ape, cli_tvai, cli_civilite, cli_prenom, cli_nom, cli_adr1, cli_adr2, cli_dep, cli_ville, cli_codepays, cli_codeadev, cli_telf, cli_fax, cli_telp, cli_email, cli_mess, cli_notaa, cli_notat, cli_ccpta, cli_ccptasp, cli_cpta, cli_prev, cli_modfact) VALUES ('$cli_cat', '$cli_datecrea', '$cli_codecrea', '$cli_datemod', '$cli_prop', '$cli_codemod', '$cli_code', '$cli_pass', '$cli_type', '$cli_ste', '$cli_rcs', '$cli_ape', '$cli_tvai', '$cli_civilite', '$cli_prenom', '$cli_nom', '$cli_adr1', '$cli_adr2', '$cli_dep', '$cli_ville', '$cli_codepays', '$cli_codeadev', '$cli_telf', '$cli_fax', '$cli_telp', '$cli_email', '$cli_mess', '$cli_notaa', '$cli_notat', '$cli_ccpta', '$cli_ccptasp', '$cli_cpta', '$cli_prev', '$cli_modfact')";
                         $dbSmi->query($myquery);
                         
-                        $lastSmiId1 = $dbSmi->query("SELECT LAST_INSERT_ID() FROM smi_cli");
+                        $lastSmiId1 = $dbSmi->query("SELECT LAST_INSERT_ID() FROM ".$dbSmiInfo->getTpref()."_cli");
                         $lastSmiId0 = $lastSmiId1->fetch(PDO::FETCH_BOTH);
                         $lastSmiId =  $lastSmiId0[0];
                         
@@ -326,7 +328,7 @@ class InterfaceSynclient
                     else
                     {
                         // je met a jour le client dolibarr dans la bdd de smi
-                        $myquery = "UPDATE smi_cli SET cli_datemod='$cli_datemod', cli_civilite='$cli_civilite', cli_prenom='$cli_prenom', cli_adr1='$cli_adr1', cli_adr2='$cli_adr2', cli_dep='$cli_dep', cli_telf='$cli_telf', cli_fax='$cli_fax', cli_telp='$cli_telp', cli_email='$cli_email' WHERE cli_id = $cliSmiId";
+                        $myquery = "UPDATE ".$dbSmiInfo->getTpref()."_cli SET cli_datemod='$cli_datemod', cli_civilite='$cli_civilite', cli_prenom='$cli_prenom', cli_adr1='$cli_adr1', cli_adr2='$cli_adr2', cli_dep='$cli_dep', cli_telf='$cli_telf', cli_fax='$cli_fax', cli_telp='$cli_telp', cli_email='$cli_email' WHERE cli_id = $cliSmiId";
                         $dbSmi->query($myquery);
                     }
                 }

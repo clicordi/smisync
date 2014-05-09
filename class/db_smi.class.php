@@ -29,17 +29,19 @@ class db_smi
         try {
             $port = '';
             if($this->port != 0)
-                $port = 'port='.$this->port;
+                $port = ';port='.$this->port;
 
             $pdo_options[PDO::ATTR_ERRMODE] = PDO::ERRMODE_EXCEPTION;
             // connexion a la bdd
-            $this->smi = new PDO('mysql:host='. $this->url .';dbname='. $this->name.';'. $port, $this->id, $this->pwd, $pdo_options); 
+            $this->smi = new PDO('mysql:host='. $this->url .';dbname='. $this->name.''. $port, $this->id, $this->pwd, $pdo_options); 
             
         }
         catch (Exception $e)
         {
             //throw new Exception($e->getMessage());
-            //die('Erreur : ' . $e->getMessage());
+            // echo 'mysql:host='. $this->url .';dbname='. $this->name.''. $port;
+            // echo 'Erreur : ' . $e->getMessage();
+            // die('Erreur : ' . $e->getMessage());
         }
     }
 
@@ -63,7 +65,7 @@ class db_smi
         // vide la table
         $this->doli->query("DELETE FROM llx_dbsmi");
         //on ajoute une ligne pour les identifiants
-        $this->doli->query("INSERT INTO llx_dbsmi (dbsmi_url, dbsmi_name, dbsmi_port, dbsmi_user, dbsmi_pwd, dbsmi_tpref) VALUES ('".$this->url."', '".$this->name."', ".$this->port.", '".$this->id."', MD5('".$this->pwd."'), '".$this->tpref"')");
+        $this->doli->query("INSERT INTO llx_dbsmi (dbsmi_url, dbsmi_name, dbsmi_port, dbsmi_user, dbsmi_pwd, dbsmi_tpref) VALUES ('".$this->url."', '".$this->name."', ".$this->port.", '".$this->id."', '".$this->pwd."', '".$this->tpref."')");
     }
     
     //fonction qui lis dans la table les identifiants

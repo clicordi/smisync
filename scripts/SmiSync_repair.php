@@ -52,13 +52,14 @@ $action = GETPOST('action', 'alpha');
 
 try {
     //connection bdd smi
-    $dbSmi = db_smi::getInstance($db)->getSmi();
+    $dbSmiInfo = db_smi::getInstance($db);
+    $dbSmi = $dbSmiInfo->getSmi();
 
 
     // Synchroniser les tables de civilités
     // On recupere toute la table de smi (seulement les civilitée supprimable)
-    //$civSmiAlls = $dbSmi->query('SELECT civ_code, civ_desc FROM smi_civ WHERE civ_delok = 1');
-    $civSmiAlls = $dbSmi->query('SELECT civ_code, civ_desc FROM smi_civ');
+    //$civSmiAlls = $dbSmi->query("SELECT civ_code, civ_desc FROM ".$dbSmiInfo->getTpref()."_civ WHERE civ_delok = 1");
+    $civSmiAlls = $dbSmi->query("SELECT civ_code, civ_desc FROM ".$dbSmiInfo->getTpref()."_civ");
     $civSmi = array();
     $iCivMod = 0;
     $iCivAdd = 0;
@@ -77,7 +78,7 @@ try {
         if(!isset($civSmi[$civDoli->code]))
         {
             //on l'ajoute
-            $sql = "INSERT INTO smi_civ (civ_code, civ_desc, civ_delok) VALUES ('".$civDoli->code."','".utf8_decode($civDoli->civilite)."', 1)";
+            $sql = "INSERT INTO ".$dbSmiInfo->getTpref()."_civ (civ_code, civ_desc, civ_delok) VALUES ('".$civDoli->code."','".utf8_decode($civDoli->civilite)."', 1)";
             $dbSmi->query($sql);
             $iCivAdd++;
         }
@@ -85,8 +86,8 @@ try {
         else if($civSmi[$civDoli->code] != utf8_decode($civDoli->civilite))
         {
             // on l'update
-            // $sql = "UPDATE smi_civ SET civ_desc = '".$civDoli->civilite."' WHERE civ_code = '".$civDoli->code."' AND civ_delok = 1";
-            $sql = "UPDATE smi_civ SET civ_desc = '".utf8_decode($civDoli->civilite)."' WHERE civ_code = '".$civDoli->code."'";
+            // $sql = "UPDATE ".$dbSmiInfo->getTpref()."_civ SET civ_desc = '".$civDoli->civilite."' WHERE civ_code = '".$civDoli->code."' AND civ_delok = 1";
+            $sql = "UPDATE ".$dbSmiInfo->getTpref()."_civ SET civ_desc = '".utf8_decode($civDoli->civilite)."' WHERE civ_code = '".$civDoli->code."'";
             $dbSmi->query($sql);
             $iCivMod++;
         }
@@ -113,7 +114,7 @@ try {
     
     
     // recherche du code client le plus grand
-    $clicodelast = $dbSmi->query('SELECT cli_code FROM smi_cli ORDER BY cli_code DESC LIMIT 0, 1');
+    $clicodelast = $dbSmi->query("SELECT cli_code FROM ".$dbSmiInfo->getTpref()."_cli ORDER BY cli_code DESC LIMIT 0, 1");
     $clicodlast = $clicodelast->fetch(PDO::FETCH_BOTH);
     $cli_code =  $clicodlast['cli_code'];
     //si pas de code clients presents
@@ -121,7 +122,7 @@ try {
         $cli_code = 'C120000000';
     
     //je recupere les infos des client de smi
-    $usersSmi = $dbSmi->query('SELECT cli_id, cli_cat, cli_datecrea, cli_codecrea, cli_datemod, cli_prop, cli_codedo, cli_codemod, cli_code, cli_pass, cli_type, cli_ste, cli_rcs, cli_ape, cli_tvai, cli_civilite, cli_prenom, cli_nom, cli_adr1, cli_adr2, cli_dep, cli_ville, cli_codepays, cli_codeadev, cli_telf, cli_fax, cli_telp, cli_email, cli_mess, cli_notaa, cli_notat, cli_ccpta, cli_ccptasp, cli_cpta, cli_prev, cli_modfact FROM smi_cli');
+    $usersSmi = $dbSmi->query("SELECT cli_id, cli_cat, cli_datecrea, cli_codecrea, cli_datemod, cli_prop, cli_codedo, cli_codemod, cli_code, cli_pass, cli_type, cli_ste, cli_rcs, cli_ape, cli_tvai, cli_civilite, cli_prenom, cli_nom, cli_adr1, cli_adr2, cli_dep, cli_ville, cli_codepays, cli_codeadev, cli_telf, cli_fax, cli_telp, cli_email, cli_mess, cli_notaa, cli_notat, cli_ccpta, cli_ccptasp, cli_cpta, cli_prev, cli_modfact FROM ".$dbSmiInfo->getTpref()."_cli");
     $cliSmi = array();
     $i = 0;
     while($userSmi = $usersSmi->fetch(PDO::FETCH_ASSOC))
@@ -270,7 +271,7 @@ try {
                 
                 if($err != 0)
                 {// une erreur dans les données
-                    $myquery = 'UPDATE smi_cli SET';
+                    $myquery = "UPDATE ".$dbSmiInfo->getTpref()."_cli SET";
                     foreach($cliSmi[$idSmi] as $key => $val) 
                     {
                         $myquery .= ' '. $key .'=\''. addslashes($val) .'\',';
@@ -337,7 +338,7 @@ try {
                 $cli_modfact = '0';
                 
                 // j'insert le client dolibarr dans la bdd de smi
-                $myquery = "INSERT INTO smi_cli (cli_cat, cli_datecrea, cli_codecrea, cli_datemod, cli_prop, cli_codemod, cli_code, cli_pass, cli_type, cli_ste, cli_rcs, cli_ape, cli_tvai, cli_civilite, cli_prenom, cli_nom, cli_adr1, cli_adr2, cli_dep, cli_ville, cli_codepays, cli_codeadev, cli_telf, cli_fax, cli_telp, cli_email, cli_mess, cli_notaa, cli_notat, cli_ccpta, cli_ccptasp, cli_cpta, cli_prev, cli_modfact) VALUES ('$cli_cat', '$cli_datecrea', '$cli_codecrea', '$cli_datemod', '$cli_prop', '$cli_codemod', '$cli_code', '$cli_pass', '$cli_type', '$cli_ste', '$cli_rcs', '$cli_ape', '$cli_tvai', '$cli_civilite', '$cli_prenom', '$cli_nom', '$cli_adr1', '$cli_adr2', '$cli_dep', '$cli_ville', '$cli_codepays', '$cli_codeadev', '$cli_telf', '$cli_fax', '$cli_telp', '$cli_email', '$cli_mess', '$cli_notaa', '$cli_notat', '$cli_ccpta', '$cli_ccptasp', '$cli_cpta', '$cli_prev', '$cli_modfact')";
+                $myquery = "INSERT INTO ".$dbSmiInfo->getTpref()."_cli (cli_cat, cli_datecrea, cli_codecrea, cli_datemod, cli_prop, cli_codemod, cli_code, cli_pass, cli_type, cli_ste, cli_rcs, cli_ape, cli_tvai, cli_civilite, cli_prenom, cli_nom, cli_adr1, cli_adr2, cli_dep, cli_ville, cli_codepays, cli_codeadev, cli_telf, cli_fax, cli_telp, cli_email, cli_mess, cli_notaa, cli_notat, cli_ccpta, cli_ccptasp, cli_cpta, cli_prev, cli_modfact) VALUES ('$cli_cat', '$cli_datecrea', '$cli_codecrea', '$cli_datemod', '$cli_prop', '$cli_codemod', '$cli_code', '$cli_pass', '$cli_type', '$cli_ste', '$cli_rcs', '$cli_ape', '$cli_tvai', '$cli_civilite', '$cli_prenom', '$cli_nom', '$cli_adr1', '$cli_adr2', '$cli_dep', '$cli_ville', '$cli_codepays', '$cli_codeadev', '$cli_telf', '$cli_fax', '$cli_telp', '$cli_email', '$cli_mess', '$cli_notaa', '$cli_notat', '$cli_ccpta', '$cli_ccptasp', '$cli_cpta', '$cli_prev', '$cli_modfact')";
                 //echo '<br>'.$myquery.'<br>Client créé';
                 $dbSmi->query($myquery);
                 $cptAjout++;
@@ -345,7 +346,7 @@ try {
                 if(!isset($idcli[$userDoli->rowid]))
                 {
                     //echo ' et Id créé dans la table de correspondance';
-                    $lastSmiId1 = $dbSmi->query("SELECT LAST_INSERT_ID() FROM smi_cli");
+                    $lastSmiId1 = $dbSmi->query("SELECT LAST_INSERT_ID() FROM ".$dbSmiInfo->getTpref()."_cli");
                     $lastSmiId0 = $lastSmiId1->fetch(PDO::FETCH_BOTH);
                     $lastSmiId =  $lastSmiId0[0];
                     //insert des id dans la table des correspondances

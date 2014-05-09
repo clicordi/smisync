@@ -117,12 +117,12 @@ if(isset($_REQUEST['int_code']) && !empty($_REQUEST['int_code']))
     
     try {        
         //connection bdd smi
-        $dbSmi = db_smi::getInstance($db)->getSmi();
-        
+        $dbSmiInfo = db_smi::getInstance($db);
+        $dbSmi = $dbSmiInfo->getSmi();
         
         //on charge les statuts
         // recupere toute les infos des statuts
-        $infosStatutsbdd = $dbSmi->query("SELECT statut_code, statut_desc, statut_img FROM CONCAT('$tpref', '_statut')");
+        $infosStatutsbdd = $dbSmi->query("SELECT statut_code, statut_desc, statut_img FROM ".$dbSmiInfo->getTpref()."_statut");
         // on met ca dans un tableau
         $infosStatuts = array();
         while($infosStatutbdd = $infosStatutsbdd->fetch(PDO::FETCH_BOTH))
@@ -132,12 +132,11 @@ if(isset($_REQUEST['int_code']) && !empty($_REQUEST['int_code']))
         }
     
     
-    
         //clauses wheres par tables
-        $tWhere['smi_int'] = "WHERE int_code = '". $int_code ."'";
-        $tWhere['smi_pdt'] = "INNER JOIN smi_pdti WHERE pdt_code = pdti_codepdt AND pdti_codeint = '". $int_code ."'";
-        $tWhere['smi_tec'] = "WHERE tec_code = (SELECT int_codetec FROM smi_int WHERE int_code = '". $int_code ."')";
-        $tWhere['smi_cli'] = "WHERE cli_code = (SELECT int_codecli FROM smi_int WHERE int_code = '". $int_code ."')";
+        $tWhere[$dbSmiInfo->getTpref().'_int'] = "WHERE int_code = '". $int_code ."'";
+        $tWhere[$dbSmiInfo->getTpref().'_pdt'] = "INNER JOIN ".$dbSmiInfo->getTpref()."_pdti WHERE pdt_code = pdti_codepdt AND pdti_codeint = '". $int_code ."'";
+        $tWhere[$dbSmiInfo->getTpref().'_tec'] = "WHERE tec_code = (SELECT int_codetec FROM ".$dbSmiInfo->getTpref()."_int WHERE int_code = '". $int_code ."')";
+        $tWhere[$dbSmiInfo->getTpref().'_cli'] = "WHERE cli_code = (SELECT int_codecli FROM ".$dbSmiInfo->getTpref()."_int WHERE int_code = '". $int_code ."')";
     
     
         $detailsCols = $db->query("SELECT cfgdetail_column, cfgdetail_label, cfgdetail_table, cfgdetail_display FROM llx_cfgdetail ORDER BY cfgdetail_table");

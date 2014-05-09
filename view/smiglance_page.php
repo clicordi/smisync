@@ -106,12 +106,16 @@ llxHeader('', $page_name, '');
 
 try {
     //connection bdd smi
-    $dbSmi = db_smi::getInstance($db)->getSmi();
+    $dbSmiInfo = db_smi::getInstance($db);
+    $dbSmi = $dbSmiInfo->getSmi();
 
+    // echo "<pre>";
+    // print_r($dbSmi);
+    // echo "</pre>";
 
     //on charge les statuts
     // recupere toute les infos des statuts
-    $infosStatutsbdd = $dbSmi->query("SELECT statut_code, statut_desc, statut_img FROM CONCAT('$tpref', '_statut')");
+    $infosStatutsbdd = $dbSmi->query("SELECT statut_code, statut_desc, statut_img FROM ".$dbSmiInfo->getTpref()."_statut");
     // on met ca dans un tableau
     $infosStatuts = array();
     while($infosStatutbdd = $infosStatutsbdd->fetch(PDO::FETCH_BOTH))
@@ -123,7 +127,7 @@ try {
     if($user->admin)
     {
         //on recupere les infos des interventions
-        $userInfos = $dbSmi->query("SELECT int_code, int_codecli, int_codestatut, int_datefinp, int_mat, int_pbm, cli_prenom, cli_nom FROM smi_int INNER JOIN smi_cli WHERE int_codecli = cli_code ORDER BY int_datedde");
+        $userInfos = $dbSmi->query("SELECT int_code, int_codecli, int_codestatut, int_datefinp, int_mat, int_pbm, cli_prenom, cli_nom FROM ".$dbSmiInfo->getTpref()."_int INNER JOIN ".$dbSmiInfo->getTpref()."_cli WHERE int_codecli = cli_code ORDER BY int_datedde");
     }
     else
     {
@@ -134,7 +138,7 @@ try {
         $cliSmiId =  $cliSmi->idcli_smi;
 
         //on recupere les infos grace a cet idsmi (dans smi)
-        $userInfos = $dbSmi->query("SELECT int_code, int_codestatut, int_datefinp, int_mat, int_pbm FROM smi_int WHERE int_codecli = (SELECT cli_code FROM smi_cli WHERE cli_id = $cliSmiId) ORDER BY int_datedde");
+        $userInfos = $dbSmi->query("SELECT int_code, int_codestatut, int_datefinp, int_mat, int_pbm FROM ".$dbSmiInfo->getTpref()."_int WHERE int_codecli = (SELECT cli_code FROM ".$dbSmiInfo->getTpref()."_cli WHERE cli_id = $cliSmiId) ORDER BY int_datedde");
     }
 
     // variables a remplir pour l'affichage plus bas

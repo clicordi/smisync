@@ -33,6 +33,7 @@ if (! $res) {
 require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
 //require_once '../lib/mymodule.lib.php';
 //require_once "../class/myclass.class.php";
+require_once "../class/db_smi.class.php";
 
 // Translations
 $langs->load("smisync@smisync");
@@ -51,15 +52,17 @@ $action = GETPOST('action', 'alpha');
 
 
 try {
-
-// Remplissage de la table de configuration des items à afficher sur la page de détail d'une intervention
-    $db->query("insert into llx_cfgdetail (cfgdetail_label, cfgdetail_column, cfgdetail_table, cfgdetail_display) values ('Code d\'intervention', 'int_code', 'smi_int', 2)");
-    $db->query("insert into llx_cfgdetail (cfgdetail_label, cfgdetail_column, cfgdetail_table, cfgdetail_display) values ('Date de fin', 'int_datefin', 'smi_int', 2)");
-    $db->query("insert into llx_cfgdetail (cfgdetail_label, cfgdetail_column, cfgdetail_table, cfgdetail_display) values ('Matériel', 'int_mat', 'smi_int', 2)");
-    $db->query("insert into llx_cfgdetail (cfgdetail_label, cfgdetail_column, cfgdetail_table, cfgdetail_display) values ('Problème', 'int_pbm', 'smi_int', 2)");
-    $db->query("insert into llx_cfgdetail (cfgdetail_label, cfgdetail_column, cfgdetail_table, cfgdetail_display) values ('Code client', 'int_codecli', 'smi_int', 2)");
-    $db->query("insert into llx_cfgdetail (cfgdetail_label, cfgdetail_column, cfgdetail_table, cfgdetail_display) values ('Nom client', 'cli_prenom', 'smi_cli', 2)");
-    $db->query("insert into llx_cfgdetail (cfgdetail_label, cfgdetail_column, cfgdetail_table, cfgdetail_display) values ('Statut', 'int_codestatut', 'smi_int', 2)");
+    $dbSmiInfo = db_smi::getInstance($db);
+    $dbSmi = $dbSmiInfo->getSmi();
+    
+    // Remplissage de la table de configuration des items à afficher sur la page de détail d'une intervention
+    $db->query("insert into llx_cfgdetail (cfgdetail_label, cfgdetail_column, cfgdetail_table, cfgdetail_display) values ('Code d\'intervention', 'int_code', '".$dbSmiInfo->getTpref()."_int', 2)");
+    $db->query("insert into llx_cfgdetail (cfgdetail_label, cfgdetail_column, cfgdetail_table, cfgdetail_display) values ('Date de fin', 'int_datefin', '".$dbSmiInfo->getTpref()."_int', 2)");
+    $db->query("insert into llx_cfgdetail (cfgdetail_label, cfgdetail_column, cfgdetail_table, cfgdetail_display) values ('Matériel', 'int_mat', '".$dbSmiInfo->getTpref()."_int', 2)");
+    $db->query("insert into llx_cfgdetail (cfgdetail_label, cfgdetail_column, cfgdetail_table, cfgdetail_display) values ('Problème', 'int_pbm', '".$dbSmiInfo->getTpref()."_int', 2)");
+    $db->query("insert into llx_cfgdetail (cfgdetail_label, cfgdetail_column, cfgdetail_table, cfgdetail_display) values ('Code client', 'int_codecli', '".$dbSmiInfo->getTpref()."_int', 2)");
+    $db->query("insert into llx_cfgdetail (cfgdetail_label, cfgdetail_column, cfgdetail_table, cfgdetail_display) values ('Nom client', 'cli_prenom', '".$dbSmiInfo->getTpref()."_cli', 2)");
+    $db->query("insert into llx_cfgdetail (cfgdetail_label, cfgdetail_column, cfgdetail_table, cfgdetail_display) values ('Statut', 'int_codestatut', '".$dbSmiInfo->getTpref()."_int', 2)");
 
 }
 catch (Exception $e)

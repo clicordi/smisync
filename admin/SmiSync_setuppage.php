@@ -58,19 +58,19 @@ $action = GETPOST('action', 'alpha');
   try {
     
     //connection bdd smi
-    $dbSmi = db_smi::getInstance($db);
+    $dbSmiInfo = db_smi::getInstance($db);
 
     if(isset($_REQUEST['urlbdd']) && isset($_REQUEST['portbdd']) && isset($_REQUEST['nombdd']) && isset($_REQUEST['idbdd']) && isset($_REQUEST['mdpbdd']) && isset($_REQUEST['tprefbdd'])
      && !empty($_REQUEST['urlbdd']) && !empty($_REQUEST['nombdd']) && !empty($_REQUEST['idbdd']) && !empty($_REQUEST['mdpbdd']) && !empty($_REQUEST['tprefbdd']))
     {
         //met a jour les variables    
-        $dbSmi->setVar($_REQUEST['urlbdd'], $_REQUEST['portbdd'], $_REQUEST['nombdd'], $_REQUEST['idbdd'], $_REQUEST['mdpbdd'], $_REQUEST['tprefbdd']);
+        $dbSmiInfo->setVar($_REQUEST['urlbdd'], $_REQUEST['portbdd'], $_REQUEST['nombdd'], $_REQUEST['idbdd'], $_REQUEST['mdpbdd'], $_REQUEST['tprefbdd']);
 
-        $dbSmi->write();
+        $dbSmiInfo->write();
     }
 
-    $dbSmi->read();
-    $dbSmi->connect();
+    $dbSmiInfo->read();
+    $dbSmiInfo->connect();
 
     /*
      * Champ a afficher dans le detail d'une intervention
@@ -176,27 +176,27 @@ print_fiche_titre($langs->trans($page_name), $linkback);
         </tr>
         <tr class="impair">
             <td><label for="urlbdd">URL</label></td>
-            <td><input id="urlbdd" name="urlbdd" type="text" value="<?php print $dbSmi->getUrl(); ?>" /></td>
+            <td><input id="urlbdd" name="urlbdd" type="text" value="<?php print $dbSmiInfo->getUrl(); ?>" /></td>
         </tr>
         <tr class="pair">
             <td><label for="portbdd">port</label></td>
-            <td><input id="portbdd" name="portbdd" type="text" value="<?php print $dbSmi->getPort(); ?>" /></td>
+            <td><input id="portbdd" name="portbdd" type="text" value="<?php print $dbSmiInfo->getPort(); ?>" /></td>
         </tr>
         <tr class="impair">
             <td><label for="nombdd">nomBDD</label></td>
-            <td><input id="nombdd" name="nombdd" type="text" value="<?php print $dbSmi->getName(); ?>" /></td>
+            <td><input id="nombdd" name="nombdd" type="text" value="<?php print $dbSmiInfo->getName(); ?>" /></td>
         </tr>
         <tr class="pair">
             <td><label for="idbdd">identifiant</label></td>
-            <td><input id="idbdd" name="idbdd" type="text" value="<?php print $dbSmi->getId(); ?>" /></td>
+            <td><input id="idbdd" name="idbdd" type="text" value="<?php print $dbSmiInfo->getId(); ?>" /></td>
         </tr>
         <tr class="impair">
             <td><label for="mdpbdd">mot de passe</label></td>
-            <td><input id="mdpbdd" name="mdpbdd" type="password" value="<?php print $dbSmi->getPwd(); ?>" /></td>
+            <td><input id="mdpbdd" name="mdpbdd" type="password" value="<?php print $dbSmiInfo->getPwd(); ?>" /></td>
         </tr>
         <tr class="pair">
             <td><label for="tprefbdd">Préfixe des tables</label></td>
-            <td><input id="tprefbdd" name="tprefbdd" type="text" value="<?php print $dbSmi->getTpref(); ?>" /></td>
+            <td><input id="tprefbdd" name="tprefbdd" type="text" value="<?php print $dbSmiInfo->getTpref(); ?>" /></td>
         <tr class="impair">
             <td colspan="2" align="center"><input class="button" type="submit" value="Modifier" /></td>
         </tr>
