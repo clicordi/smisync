@@ -307,18 +307,11 @@ try {
                 $cli_rcs = '';
                 $cli_ape = '';
                 $cli_tvai = '';
-                /*
-                if($userDoli->civilite == 'MME')
-                    $cli_civilite = 'MME';
-                else if($userDoli->civilite == 'MLE')
-                    $cli_civilite = 'MELLE';  // modifier cette valeur en MME si l'on ne veux pas insulter les madames
-                else
-                    $cli_civilite = 'M.';
-                */
-                $cli_prenom = addslashes($userDoli->nom); // mis dans le champ prenom pour raison de formatage de text dans le champ nom
+                $cli_civilite = $contactUser->civilite;
+                $cli_prenom = addslashes(utf8_decode($userDoli->nom)); // mis dans le champ prenom pour raison de formatage de text dans le champ nom
                 $cli_nom = ' ';
-                $cli_adr1 = addslashes($userDoli->address);
-                $cli_adr2 = addslashes($userDoli->zip).' '.addslashes($userDoli->town); // code pour la ville (2 ligne en dessous) un peu special je le met donc dans ce champ
+                $cli_adr1 = addslashes(utf8_decode(substr($userDoli->address, 0, 50)));
+                $cli_adr2 = addslashes(utf8_decode($userDoli->zip)).' '.addslashes(utf8_decode($userDoli->town)); // code pour la ville (2 ligne en dessous) un peu special je le met donc dans ce champ
                 $cli_dep = addslashes(substr($userDoli->zip, 0, 2)); // recupere le num de departement dans le code postale
                 // a voir
                 $cli_ville = '0';
@@ -326,7 +319,7 @@ try {
                 $cli_codeadev = 'EUR';
                 $cli_telf = addslashes($userDoli->phone);
                 $cli_fax = addslashes($userDoli->fax);
-                $cli_telp = addslashes($userDoli->phone_mobile);
+                $cli_telp = addslashes($contactUser->phone_mobile);
                 $cli_email = addslashes($userDoli->email);
                 $cli_mess = '';
                 $cli_notaa = '';
@@ -339,29 +332,31 @@ try {
                 
                 // j'insert le client dolibarr dans la bdd de smi
                 $myquery = "INSERT INTO ".$dbSmiInfo->getTpref()."_cli (cli_cat, cli_datecrea, cli_codecrea, cli_datemod, cli_prop, cli_codemod, cli_code, cli_pass, cli_type, cli_ste, cli_rcs, cli_ape, cli_tvai, cli_civilite, cli_prenom, cli_nom, cli_adr1, cli_adr2, cli_dep, cli_ville, cli_codepays, cli_codeadev, cli_telf, cli_fax, cli_telp, cli_email, cli_mess, cli_notaa, cli_notat, cli_ccpta, cli_ccptasp, cli_cpta, cli_prev, cli_modfact) VALUES ('$cli_cat', '$cli_datecrea', '$cli_codecrea', '$cli_datemod', '$cli_prop', '$cli_codemod', '$cli_code', '$cli_pass', '$cli_type', '$cli_ste', '$cli_rcs', '$cli_ape', '$cli_tvai', '$cli_civilite', '$cli_prenom', '$cli_nom', '$cli_adr1', '$cli_adr2', '$cli_dep', '$cli_ville', '$cli_codepays', '$cli_codeadev', '$cli_telf', '$cli_fax', '$cli_telp', '$cli_email', '$cli_mess', '$cli_notaa', '$cli_notat', '$cli_ccpta', '$cli_ccptasp', '$cli_cpta', '$cli_prev', '$cli_modfact')";
-                //echo '<br>'.$myquery.'<br>Client créé';
                 $dbSmi->query($myquery);
                 $cptAjout++;
 
+                $lastSmiId1 = $dbSmi->query("SELECT LAST_INSERT_ID() FROM ".$dbSmiInfo->getTpref()."_cli");
+                $lastSmiId0 = $lastSmiId1->fetch(PDO::FETCH_BOTH);
+                $lastSmiId =  $lastSmiId0[0];
+
                 if(!isset($idcli[$userDoli->rowid]))
                 {
-                    //echo ' et Id créé dans la table de correspondance';
-                    $lastSmiId1 = $dbSmi->query("SELECT LAST_INSERT_ID() FROM ".$dbSmiInfo->getTpref()."_cli");
-                    $lastSmiId0 = $lastSmiId1->fetch(PDO::FETCH_BOTH);
-                    $lastSmiId =  $lastSmiId0[0];
                     //insert des id dans la table des correspondances
                     $myquery = "INSERT INTO llx_idcli (idcli_doli, idcli_smi) VALUES (".$userDoli->rowid.", $lastSmiId)";
-                    //echo '<br>'.$myquery.'<br>id cor créé';
                     $db->query($myquery);
                 }
-
+                else
+                {
+                    //met a jour l'id smi dans la table des correspondances
+                    $myquery = "UPDATE llx_idcli SET idcli_smi = $lastSmiId WHERE idcli_doli =  ".$userDoli->rowid." ";
+                    $db->query($myquery);
+                }
 
             }
         
     	}
     
     }
-    
 
 }
 catch (Exception $e)
